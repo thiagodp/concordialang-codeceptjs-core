@@ -1,0 +1,73 @@
+{
+    "name": "concordialang-codeceptjs-core",
+    "version": "0.1.0",
+    "description": "Concordia Language plug-in core for CodeceptJS",
+    "license": "AGPL-3.0",
+    "readme": "readme.md",
+    "homepage": "https://github.com/thiagodp/concordialang-codeceptjs-core",
+    "author": {
+        "name": "Thiago Delgado Pinto",
+        "email": "thiago-dp@bol.com.br"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/thiagodp/concordialang-codeceptjs-core.git"
+    },
+    "bugs": {
+        "url": "https://github.com/thiagodp/concordialang-codeceptjs-core/issues"
+    },
+    "keywords": [
+        "concordialang",
+        "concordia-lang",
+        "concordia",
+        "codeceptjs",
+        "test",
+        "script",
+        "e2e",
+        "plugin",
+        "plug-in"
+    ],
+    "main": "dist",
+    "types": "dist",
+    "files": [
+        "dist/*"
+    ],
+    "scripts": {
+        "build": "(rimraf dist || echo \"rimraf not installed\") && tsc",
+        "test": "jest --passWithNoTests",
+        "postversion": "git push && git push --tags"
+    },
+    "jest": {
+        "transform": {
+            ".(ts|tsx)": "ts-jest"
+        },
+        "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(tsx?)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js"
+        ]
+    },
+    "dependencies": {
+        "chalk": "^2.4.2",
+        "concordialang-plugin": "^0.4.0",
+        "concordialang-types": "^0.1.4",
+        "dedent-js": "^1.0.1",
+        "figures": "^2.0.0",
+        "log-symbols": "^2.2.0",
+        "mustache": "^2.3.0",
+        "node-fs-extra": "^0.8.2"
+    },
+    "devDependencies": {
+        "@types/chalk": "^0.4.31",
+        "@types/core-js": "^0.9.46",
+        "@types/figures": "^2.0.0",
+        "@types/jest": "^24.0.11",
+        "@types/node": "^8.10.17",
+        "jest": "^24.5.0",
+        "memfs": "^2.9.0",
+        "rimraf": "^2.6.3",
+        "ts-jest": "^24.0.0",
+        "typescript": "^3.3.4000"
+    }
+}
