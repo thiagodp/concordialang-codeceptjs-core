@@ -2,8 +2,9 @@ import * as fs from 'fs';
 import { join, parse } from 'path';
 import { promisify } from 'util';
 import * as fse from 'node-fs-extra';
-import { AbstractTestScript, TestScriptGenerationOptions, TestScriptExecutionOptions, TestScriptExecutionResult } from 'concordialang-types';
+import { AbstractTestScript, TestScriptGenerationOptions, TestScriptExecutionOptions, TestScriptExecutionResult } from 'concordialang-plugin';
 import { Plugin } from 'concordialang-plugin';
+
 import { TestScriptExecutor } from './TestScriptExecutor';
 import { TestScriptGenerator } from './TestScriptGenerator';
 import { ReportConverter } from './ReportConverter';

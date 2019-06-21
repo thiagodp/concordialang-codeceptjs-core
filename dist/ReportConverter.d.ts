@@ -1,4 +1,5 @@
-import { TestScriptExecutionResult, Location } from 'concordialang-types';
+import { Location } from 'concordialang-types';
+import { TestScriptExecutionResult } from 'concordialang-plugin';
 /**
  * Converts a Mocha Multi Report to Concordia's format.
  *

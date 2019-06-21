@@ -2,7 +2,8 @@ import { render } from "mustache";
 const dedent = require('dedent-js');
 import * as logSymbols from 'log-symbols';
 import chalk from 'chalk';
-import { AbstractTestScript, ATSCommand } from 'concordialang-types';
+import { AbstractTestScript, ATSCommand } from 'concordialang-plugin';
+
 import { CommandMapper } from "./CommandMapper";
 
 /**

@@ -1,4 +1,5 @@
-import { ATSCommand } from 'concordialang-types/dist/testscript/AbstractTestScript';
+import { ATSCommand } from 'concordialang-plugin';
+
 import { CommandMapper } from '../src/CommandMapper';
 import { CODECEPTJS_COMMANDS } from '../src/Commands';
 

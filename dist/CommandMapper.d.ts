@@ -1,4 +1,4 @@
-import { ATSCommand } from "concordialang-types";
+import { ATSCommand } from "concordialang-plugin";
 /**
  * Command comparison
  */

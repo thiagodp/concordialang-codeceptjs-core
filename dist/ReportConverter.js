@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const util_1 = require("util");
-const concordialang_types_1 = require("concordialang-types");
 const concordialang_plugin_1 = require("concordialang-plugin");
 /**
  * Converts a Mocha Multi Report to Concordia's format.
@@ -45,7 +44,7 @@ class ReportConverter {
             catch (e) {
                 // will stay with empty plug-in info
             }
-            let result = new concordialang_types_1.TestScriptExecutionResult();
+            let result = new concordialang_plugin_1.TestScriptExecutionResult();
             source.resultFilePath = resultFilePath;
             this.fillMetadata(source, result);
             this.fillStatus(source, result);
@@ -87,7 +86,7 @@ class ReportConverter {
             result.durationMs = totalDuration;
             // Total tests
             if (!result.total) {
-                result.total = new concordialang_types_1.TotalExecutionResult();
+                result.total = new concordialang_plugin_1.TotalExecutionResult();
             }
             result.total.tests = tests.length;
             result.total.passed = (source.passes || []).length;
@@ -138,7 +137,7 @@ class ReportConverter {
             }
             // Creates a TestMethodResult for each CodeceptJS' test method report.
             for (let method of source.tests || []) {
-                let testMethodResult = new concordialang_types_1.TestMethodResult();
+                let testMethodResult = new concordialang_plugin_1.TestMethodResult();
                 testMethodResult.name = method.title;
                 testMethodResult.status = this.isObjectEmpty(method.err) ? 'passed' : 'failed';
                 testMethodResult.durationMs = method.duration;
@@ -176,7 +175,7 @@ class ReportConverter {
         let testSuiteResult = result.results.find((suite) => suite.suite === suiteName);
         // If the test suite doesn't exists, creates a new one.
         if (!testSuiteResult) {
-            testSuiteResult = new concordialang_types_1.TestSuiteResult();
+            testSuiteResult = new concordialang_plugin_1.TestSuiteResult();
             testSuiteResult.suite = suiteName;
             testSuiteResult.methods = [];
             result.results.push(testSuiteResult);

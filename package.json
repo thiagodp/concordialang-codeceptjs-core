@@ -50,8 +50,8 @@
     },
     "dependencies": {
         "chalk": "^2.4.2",
-        "concordialang-plugin": "^0.4.0",
-        "concordialang-types": "^0.1.4",
+        "concordialang-plugin": "^0.6.0",
+        "concordialang-types": "^2.0.0",
         "dedent-js": "^1.0.1",
         "figures": "^2.0.0",
         "log-symbols": "^2.2.0",

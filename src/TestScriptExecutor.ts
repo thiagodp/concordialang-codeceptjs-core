@@ -5,7 +5,8 @@ import { writeFile, access, constants, readFile } from 'fs';
 import chalk from 'chalk';
 import { arrowRight, info, cross, warning } from 'figures';
 import * as fse from 'node-fs-extra';
-import { TestScriptExecutionOptions } from 'concordialang-types';
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
+
 import { ConfigMaker } from './ConfigMaker';
 
 /**
