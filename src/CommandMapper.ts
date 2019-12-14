@@ -79,6 +79,7 @@ export enum CmdCmp {
     SAME_MODIFIER__SAME_OPTION__ONE_TARGET,
     SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE,
     SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER,
+    SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES,
     SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET,
     SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE,
     SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER,
@@ -93,6 +94,14 @@ export enum CmdCmp {
     TWO_NUMBERS_SAME_TARGET_TYPE
 }
 
+export enum OptionsOptions {
+    // E.g. action: "see", target: "#foo", options: [ "class" ], values: [ "active" ] -> {"class": "active"}
+    OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE = 1,
+
+    // E.g. action: "see", target: "#foo", options: [ "attribute" ], values: [ "class", "active" ] -> {"class": "active"}
+    FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE = 2
+}
+
 /**
  * Command configuration
  *
@@ -105,7 +114,8 @@ export interface CmdCfg {
     options?: string[],
     targetType?: string,
     template: string,
-    valuesAsNonArray?: boolean,
+    optionsOption?: OptionsOptions,
+    valuesAsNonArray?: boolean, // [ "a", "b" ] -> "a", "b"
     singleQuotedValues?: boolean,
     singleQuotedTargets?: boolean
 }
@@ -166,14 +176,38 @@ export class CommandMapper {
 
         const template = cfg.template + COMMENT_TEMPLATE;
 
+        let valueToRender = ! cmd.values ? '' : this.valuesToParameters( cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues );
+
+        switch ( cfg.optionsOption ) {
+
+            case OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE: {
+                const [ firstCfgOption ] = cfg.options; // From CFG, not CMD !
+                const [ firstValue ] = cmd.values;
+                if ( firstCfgOption !== undefined && firstValue !== undefined ) {
+                    valueToRender = `{"${firstCfgOption}": "${firstValue}"}`;
+                }
+                break;
+            }
+
+            case OptionsOptions.FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE: {
+                const [ firstValue, secondValue ] = cmd.values;
+                if ( firstValue !== undefined && secondValue !== undefined  ) {
+                    valueToRender = `{"${firstValue}": "${secondValue}"}`;
+                }
+                break;
+            }
+
+            default: ; // no default
+        }
+
         const values = {
             target   : ! cmd.targets ? '' : this.targetsToParameters( cmd.targets, cfg.singleQuotedTargets ),
-            value    : ! cmd.values ? '' : this.valuesToParameters( cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues ),
+            value    : valueToRender,
             location : cmd.location,
             comment  : cmd.comment,
             modifier : cmd.modifier,
             options  : cmd.options,
-        }
+        };
 
         return [ render( template, values ) ];
     }
@@ -670,6 +704,13 @@ export class CommandMapper {
             case CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER: {
                 return 1 === targetsCount &&
                     1 === valuesCount &&
+                    includeOptions( cfg, cmd ) &&
+                    cfg.modifier === cmd.modifier;
+            }
+
+            case CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES: {
+                return 1 === targetsCount &&
+                    2 === valuesCount &&
                     includeOptions( cfg, cmd ) &&
                     cfg.modifier === cmd.modifier;
             }

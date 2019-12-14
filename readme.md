@@ -112,7 +112,9 @@ The following table lists the support to the [Concordia Language Actions](https:
  | see                                              | see ✓                                                                             |
  | see + app + installed                            | seeAppIsInstalled ✓ (Appium only)                                                 |
  | see + app + installed + not                      | seeAppIsNotInstalled ✓ (Appium only)                                              |
- | -                                                | seeAttributesOnElements                                                           |
+ | see + ( uielement OR uiliteral ) + attribute + value  | seeAttributesOnElements ✓ |
+ | see + ( uielement OR uiliteral ) + class + value      | _(same above)_ |
+ | see + ( uielement OR uiliteral ) + style + value      | _(same above)_ |
  | see + checkbox                                   | seeCheckboxIsChecked ✓                                                            |
  | see + cookie                                     | seeCookie ✓                                                                       |
  | -                                                | seeCssPropertiesOnElements                                                        |

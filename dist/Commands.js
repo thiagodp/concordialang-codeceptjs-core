@@ -139,6 +139,12 @@ exports.CODECEPTJS_COMMANDS = [
     { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: ['inside'], template: 'I.see({{{value}}}, {{{target}}});' },
     // see + value | number + not + inside + target
     { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: ['inside'], modifier: 'not', template: 'I.dontSee({{{value}}}, {{{target}}});' },
+    // see + target + option "class" + value
+    { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: ['class'], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: CommandMapper_1.OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE },
+    // see + target + option "style" + value
+    { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: ['style'], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: CommandMapper_1.OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE },
+    // see + target + option "attribute" + value + value
+    { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES, options: ['attribute'], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: CommandMapper_1.OptionsOptions.FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE },
     // see + with + value | number
     { action: 'see', comp: CommandMapper_1.CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: ['with'], template: 'I.see({{{value}}}, {{{target}}});' },
     // see + with + not + value | number

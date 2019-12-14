@@ -68,17 +68,25 @@ var CmdCmp;
     CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__ONE_TARGET"] = 59] = "SAME_MODIFIER__SAME_OPTION__ONE_TARGET";
     CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE"] = 60] = "SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE";
     CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER"] = 61] = "SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER";
-    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET"] = 62] = "SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET";
-    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE"] = 63] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE";
-    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER"] = 64] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER";
-    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE"] = 65] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE";
-    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER"] = 66] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER";
-    CmdCmp[CmdCmp["TWO_TARGETS"] = 67] = "TWO_TARGETS";
-    CmdCmp[CmdCmp["TWO_VALUES_SAME_OPTION"] = 68] = "TWO_VALUES_SAME_OPTION";
-    CmdCmp[CmdCmp["TWO_NUMBERS"] = 69] = "TWO_NUMBERS";
-    CmdCmp[CmdCmp["TWO_NUMBERS_SAME_OPTION"] = 70] = "TWO_NUMBERS_SAME_OPTION";
-    CmdCmp[CmdCmp["TWO_NUMBERS_SAME_TARGET_TYPE"] = 71] = "TWO_NUMBERS_SAME_TARGET_TYPE";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES"] = 62] = "SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET"] = 63] = "SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE"] = 64] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER"] = 65] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE"] = 66] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE";
+    CmdCmp[CmdCmp["SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER"] = 67] = "SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER";
+    CmdCmp[CmdCmp["TWO_TARGETS"] = 68] = "TWO_TARGETS";
+    CmdCmp[CmdCmp["TWO_VALUES_SAME_OPTION"] = 69] = "TWO_VALUES_SAME_OPTION";
+    CmdCmp[CmdCmp["TWO_NUMBERS"] = 70] = "TWO_NUMBERS";
+    CmdCmp[CmdCmp["TWO_NUMBERS_SAME_OPTION"] = 71] = "TWO_NUMBERS_SAME_OPTION";
+    CmdCmp[CmdCmp["TWO_NUMBERS_SAME_TARGET_TYPE"] = 72] = "TWO_NUMBERS_SAME_TARGET_TYPE";
 })(CmdCmp = exports.CmdCmp || (exports.CmdCmp = {}));
+var OptionsOptions;
+(function (OptionsOptions) {
+    // E.g. action: "see", target: "#foo", options: [ "class" ], values: [ "active" ] -> {"class": "active"}
+    OptionsOptions[OptionsOptions["OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE"] = 1] = "OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE";
+    // E.g. action: "see", target: "#foo", options: [ "attribute" ], values: [ "class", "active" ] -> {"class": "active"}
+    OptionsOptions[OptionsOptions["FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE"] = 2] = "FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE";
+})(OptionsOptions = exports.OptionsOptions || (exports.OptionsOptions = {}));
 /**
  * Command mapper
  *
@@ -125,9 +133,28 @@ class CommandMapper {
             return [mustache_1.render(template, values)];
         }
         const template = cfg.template + COMMENT_TEMPLATE;
+        let valueToRender = !cmd.values ? '' : this.valuesToParameters(cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues);
+        switch (cfg.optionsOption) {
+            case OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE: {
+                const [firstCfgOption] = cfg.options; // From CFG, not CMD !
+                const [firstValue] = cmd.values;
+                if (firstCfgOption !== undefined && firstValue !== undefined) {
+                    valueToRender = `{"${firstCfgOption}": "${firstValue}"}`;
+                }
+                break;
+            }
+            case OptionsOptions.FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE: {
+                const [firstValue, secondValue] = cmd.values;
+                if (firstValue !== undefined && secondValue !== undefined) {
+                    valueToRender = `{"${firstValue}": "${secondValue}"}`;
+                }
+                break;
+            }
+            default: ; // no default
+        }
         const values = {
             target: !cmd.targets ? '' : this.targetsToParameters(cmd.targets, cfg.singleQuotedTargets),
-            value: !cmd.values ? '' : this.valuesToParameters(cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues),
+            value: valueToRender,
             location: cmd.location,
             comment: cmd.comment,
             modifier: cmd.modifier,
@@ -558,6 +585,12 @@ class CommandMapper {
             case CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER: {
                 return 1 === targetsCount &&
                     1 === valuesCount &&
+                    includeOptions(cfg, cmd) &&
+                    cfg.modifier === cmd.modifier;
+            }
+            case CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES: {
+                return 1 === targetsCount &&
+                    2 === valuesCount &&
                     includeOptions(cfg, cmd) &&
                     cfg.modifier === cmd.modifier;
             }

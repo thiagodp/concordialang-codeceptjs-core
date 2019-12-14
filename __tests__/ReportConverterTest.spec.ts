@@ -111,10 +111,7 @@ describe( 'ReportConverterTest', () => {
         "description": "Generates test scripts for CodeceptJS",
         "version": "0.1",
         "targets": [ "CodeceptJS" ],
-        "authors": [
-            "Matheus Eller Fagundes (matheusefagundes@gmail.com)",
-            "Thiago Delgado Pinto (thiago-dp@bol.com.br)"
-        ],
+        "authors": [],
         "file": "codeceptjs/CodeceptJS.ts",
         "class": "CodeceptJS"
     };

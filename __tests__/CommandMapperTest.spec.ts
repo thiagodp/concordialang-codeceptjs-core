@@ -667,6 +667,87 @@ describe( 'CommandMapperTest', () => {
 
         } );
 
+        describe( 'seeAttributesOnElements', () => {
+
+            it( 'option "class", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'class' ],
+                    targets: [ '#foo' ],
+                    values: [ "active" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"class": "active"});` + comment );
+            } );
+
+            it( 'options "with" and "class", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'with', 'class' ],
+                    targets: [ '#foo' ],
+                    values: [ "active" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"class": "active"});` + comment );
+            } );
+
+            it( 'options "class" and "with", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'class', 'with' ],
+                    targets: [ '#foo' ],
+                    values: [ "active" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"class": "active"});` + comment );
+            } );
+
+            it( 'option "style", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'style' ],
+                    targets: [ '#foo' ],
+                    values: [ "color: blue" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"style": "color: blue"});` + comment );
+            } );
+
+            it( 'options "style" and "with", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'style', "with" ],
+                    targets: [ '#foo' ],
+                    values: [ "color: blue" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"style": "color: blue"});` + comment );
+            } );
+
+            it( 'options "with" and "style", one value, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'with', 'style' ],
+                    targets: [ '#foo' ],
+                    values: [ "color: blue" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"style": "color: blue"});` + comment );
+            } );
+
+            it( 'option "attribute", two values, one target', () => {
+                let cmd: ATSCommand = {
+                    action: 'see',
+                    options: [ 'attribute' ],
+                    targets: [ '#foo' ],
+                    values: [ "class", "active" ],
+                };
+                const r = cm.map( cmd );
+                expect( r ).toContainEqual( `I.seeAttributesOnElements('#foo', {"class": "active"});` + comment );
+            } );
+
+        } );
+
         describe( 'seeCurrentActivityIs', () => {
 
             it( 'options, value', () => {
