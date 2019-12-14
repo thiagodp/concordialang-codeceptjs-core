@@ -35,6 +35,7 @@
     "scripts": {
         "build": "(rimraf dist || echo \"rimraf not installed\") && tsc",
         "test": "jest --passWithNoTests",
+        "all": "npm run build && npm run test",
         "postversion": "git push && git push --tags"
     },
     "jest": {
