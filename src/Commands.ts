@@ -136,17 +136,17 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     // see + textarea as target type + not + value | number
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'textarea', modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
 
-    // see + value | number + inside + target
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'inside' ], template: 'I.see({{{value}}}, {{{target}}});' },
-    // see + value | number + not + inside + target
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'inside' ], modifier: 'not', template: 'I.dontSee({{{value}}}, {{{target}}});' },
-
     // see + target + option "class" + value
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'class' ], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE },
     // see + target + option "style" + value
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'style' ], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE },
     // see + target + option "attribute" + value + value
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__TWO_VALUES, options: [ 'attribute' ], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: OptionsOptions.FIRST_VALUE_AS_PROPERTY__SECOND_VALUE_AS_VALUE },
+
+    // see + value | number + inside + target
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'inside' ], template: 'I.see({{{value}}}, {{{target}}});' },
+    // see + value | number + not + inside + target
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'inside' ], modifier: 'not', template: 'I.dontSee({{{value}}}, {{{target}}});' },
 
     // see + with + value | number
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'with' ], template: 'I.see({{{value}}}, {{{target}}});' },
