@@ -8,6 +8,8 @@
 
 This is not a plug-in, but a plug-in core.
 
+## [What's New](https://github.com/thiagodp/concordialang-codeceptjs-core/releases)
+
 ## Installation
 
 ```bash
