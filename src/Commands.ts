@@ -245,12 +245,16 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'swipe', comp: CmdCmp.TWO_TARGETS, template: 'I.swipeTo({{{target}}});' },
 
     // switch + app (same as switch + currentPage)
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'app', template: 'I.switchTo();' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'app' ], template: 'I.switchTo();' },
     // switch + currentPage
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'currentPage', template: 'I.switchTo();' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'currentPage' ], template: 'I.switchTo();' },
     // switch + iframe
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'iframe', template: 'I.switchTo("iframe");' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'iframe' ], template: 'I.switchTo("iframe");' },
     // switch + iframe + value
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE, targetType: 'iframe', template: 'I.switchTo({{{value}}});' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'iframe' ], template: 'I.switchTo({{{value}}});' },
 
     // switch + native (Appium only)

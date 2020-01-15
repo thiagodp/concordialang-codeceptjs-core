@@ -1342,6 +1342,24 @@ describe( 'CommandMapperTest', () => {
             expect( r ).toContainEqual( 'I.switchTo();' + comment );
         } );
 
+        it( 'target type app', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'app' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo();' + comment );
+        } );
+
+        it( 'target type currentPage', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'currentPage' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo();' + comment );
+        } );
+
     } );
 
 
@@ -1361,6 +1379,25 @@ describe( 'CommandMapperTest', () => {
                 action: 'switch',
                 options: [ 'iframe' ],
                 values: [ '#foo' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo("#foo");' + comment );
+        } );
+
+        it( 'target type iframe', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'iframe' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo("iframe");' + comment );
+        } );
+
+        it( 'target type iframe, value', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'iframe' ],
+                values: [ "#foo" ]
             };
             const r = cm.map( cmd );
             expect( r ).toContainEqual( 'I.switchTo("#foo");' + comment );
