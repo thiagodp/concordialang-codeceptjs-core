@@ -1322,6 +1322,52 @@ describe( 'CommandMapperTest', () => {
 
     } );
 
+    describe( 'switchToApplicationOrCurrentPage', () => {
+
+        it( 'option app', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                options: [ 'app' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo();' + comment );
+        } );
+
+        it( 'option currentPage', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                options: [ 'currentPage' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo();' + comment );
+        } );
+
+    } );
+
+
+    describe( 'switchToIFrame', () => {
+
+        it( 'option iframe', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                options: [ 'iframe' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo("iframe");' + comment );
+        } );
+
+        it( 'option iframe, value', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                options: [ 'iframe' ],
+                values: [ '#foo' ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( 'I.switchTo("#foo");' + comment );
+        } );
+
+    } );
+
 
     describe( 'switchToNative', () => {
 

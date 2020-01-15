@@ -229,6 +229,14 @@ exports.CODECEPTJS_COMMANDS = [
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.ONE_VALUE__TWO_NUMBERS, valuesAsNonArray: true, template: 'I.swipe({{{value}}});' },
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.ONE_VALUE__THREE_NUMBERS, valuesAsNonArray: true, template: 'I.swipe({{{value}}});' },
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.swipeTo({{{target}}});' },
+    // switch + app (same as switch + currentPage)
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['app'], template: 'I.switchTo();' },
+    // switch + currentPage
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['currentPage'], template: 'I.switchTo();' },
+    // switch + iframe
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['iframe'], template: 'I.switchTo("iframe");' },
+    // switch + iframe + value
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION__ONE_VALUE, options: ['iframe'], template: 'I.switchTo({{{value}}});' },
     // switch + native (Appium only)
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION__ONE_VALUE, options: ['native'], template: 'I.switchToNative({{{value}}});' },
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['native'], template: 'I.switchToNative();' },
