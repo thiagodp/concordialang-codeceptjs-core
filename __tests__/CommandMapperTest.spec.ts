@@ -1363,40 +1363,40 @@ describe( 'CommandMapperTest', () => {
     } );
 
 
-    describe( 'switchToIFrame', () => {
+    describe( 'switchToFrame', () => {
 
-        it( 'option iframe', () => {
+        it( 'option frame', () => {
             let cmd: ATSCommand = {
                 action: 'switch',
-                options: [ 'iframe' ]
+                options: [ 'frame' ]
             };
             const r = cm.map( cmd );
             expect( r ).toContainEqual( 'I.switchTo("iframe");' + comment );
         } );
 
-        it( 'option iframe, value', () => {
+        it( 'option frame, value', () => {
             let cmd: ATSCommand = {
                 action: 'switch',
-                options: [ 'iframe' ],
+                options: [ 'frame' ],
                 values: [ '#foo' ]
             };
             const r = cm.map( cmd );
             expect( r ).toContainEqual( 'I.switchTo("#foo");' + comment );
         } );
 
-        it( 'target type iframe', () => {
+        it( 'target type frame', () => {
             let cmd: ATSCommand = {
                 action: 'switch',
-                targetTypes: [ 'iframe' ]
+                targetTypes: [ 'frame' ]
             };
             const r = cm.map( cmd );
             expect( r ).toContainEqual( 'I.switchTo("iframe");' + comment );
         } );
 
-        it( 'target type iframe, value', () => {
+        it( 'target type frame, value', () => {
             let cmd: ATSCommand = {
                 action: 'switch',
-                targetTypes: [ 'iframe' ],
+                targetTypes: [ 'frame' ],
                 values: [ "#foo" ]
             };
             const r = cm.map( cmd );
