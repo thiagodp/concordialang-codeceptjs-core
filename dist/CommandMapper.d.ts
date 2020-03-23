@@ -91,7 +91,7 @@ export interface CmdCfg {
     comp: CmdCmp;
     modifier?: string;
     options?: string[];
-    targetType?: string;
+    targetTypes?: string | string[];
     template: string;
     optionsOption?: OptionsOptions;
     valuesAsNonArray?: boolean;

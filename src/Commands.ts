@@ -8,14 +8,14 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'accept', comp: CmdCmp.SAME_OPTION, options: [ 'popup' ], template: 'I.acceptPopup();' },
     { action: 'accept', comp: CmdCmp.SAME_OPTION, options: [ 'prompt' ], template: 'I.acceptPopup();' },
     // amOn
-    { action: 'amOn', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetType: 'url', template: 'I.amOnPage({{{target}}});' },
+    { action: 'amOn', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'url', template: 'I.amOnPage({{{target}}});' },
     { action: 'amOn', comp: CmdCmp.ONE_VALUE, template: 'I.amOnPage({{{value}}});' },
     { action: 'amOn', comp: CmdCmp.ONE_TARGET, template: 'I.amOnPage({{{target}}});' },
     // append
     { action: 'append', comp: CmdCmp.ONE_TARGET__ONE_VALUE_OR_NUMBER, template: 'I.appendField({{{target}}}, {{{value}}});' },
     // attachFile
     { action: 'attachFile', comp: CmdCmp.ONE_TARGET__ONE_VALUE, template: 'I.attachFile({{{target}}}, {{{value}}});' },
-    { action: 'fill', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'inputFile', template: 'I.attachFile({{{target}}}, {{{value}}});' },
+    { action: 'fill', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'inputFile', template: 'I.attachFile({{{target}}}, {{{value}}});' },
     // cancel
     { action: 'cancel', comp: CmdCmp.SAME_OPTION, options: [ 'alert' ], template: 'I.cancelPopup();' },
     { action: 'cancel', comp: CmdCmp.SAME_OPTION, options: [ 'confirm' ], template: 'I.cancelPopup();' },
@@ -27,9 +27,9 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'check', comp: CmdCmp.TWO_TARGETS, template: 'I.checkOption({{{target}}});' },
     { action: 'check', comp: CmdCmp.ONE_VALUE_OR_NUMBER, template: 'I.checkOption({{{value}}});' },
     // clear + cookie
-    { action: 'clear', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetType: 'cookie', template: 'I.clearCookie({{{target}}});' },
-    { action: 'clear', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'cookie', template: 'I.clearCookie({{{value}}});' },
-    { action: 'clear', comp: CmdCmp.SAME_OPTION__ONE_VALUE_OR_NUMBER, targetType: 'cookie', template: 'I.clearCookie({{{value}}});' },
+    { action: 'clear', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'cookie', template: 'I.clearCookie({{{target}}});' },
+    { action: 'clear', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'cookie', template: 'I.clearCookie({{{value}}});' },
+    { action: 'clear', comp: CmdCmp.SAME_OPTION__ONE_VALUE_OR_NUMBER, targetTypes: 'cookie', template: 'I.clearCookie({{{value}}});' },
     // clear + field
     { action: 'clear', comp: CmdCmp.ONE_TARGET, template: 'I.clearField({{{target}}});' },
     { action: 'clear', comp: CmdCmp.SAME_OPTION__ONE_TARGET, options: [ 'field' ], template: 'I.clearField({{{target}}});' },
@@ -41,10 +41,10 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     // close + app (Appium only)
     { action: 'close', comp: CmdCmp.SAME_OPTION, options: [ 'app' ], template: 'I.closeApp();' },
     // close + currentTab
-    { action: 'close', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'currentTab', template: 'I.closeCurrentTab();' },
+    { action: 'close', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'currentTab', template: 'I.closeCurrentTab();' },
     { action: 'close', comp: CmdCmp.SAME_OPTION, options: [ 'currentTab' ], template: 'I.closeCurrentTab();' },
     // close + otherTabs
-    { action: 'close', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'otherTabs', template: 'I.closeOtherTabs();' },
+    { action: 'close', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'otherTabs', template: 'I.closeOtherTabs();' },
     { action: 'close', comp: CmdCmp.SAME_OPTION, options: [ 'otherTabs' ], template: 'I.closeOtherTabs();' },
     // connect + database (usually during a Test Event)
     { action: 'connect', comp: CmdCmp.TWO_VALUES_SAME_OPTION, options: [ 'database' ], valuesAsNonArray: true, template: 'I.connect({{{value}}});' },
@@ -65,11 +65,11 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'install', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'app' ], template: 'I.installApp({{{value}}});' },
     { action: 'install', comp: CmdCmp.ONE_VALUE, template: 'I.installApp({{{value}}});' },
     // maximize + window
-    { action: 'maximize', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'window', template: 'I.resizeWindow("maximize");' },
+    { action: 'maximize', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'window', template: 'I.resizeWindow("maximize");' },
     { action: 'maximize', comp: CmdCmp.SAME_OPTION, options: [ 'window' ], template: 'I.resizeWindow("maximize");' },
     // move + cursor + target [ + x, y ]
-    { action: 'move', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__TWO_NUMBERS, targetType: 'cursor', valuesAsNonArray: true, template: 'I.moveCursorTo({{{target}}}, {{{value}}});' },
-    { action: 'move', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetType: 'cursor', template: 'I.moveCursorTo({{{target}}});' },
+    { action: 'move', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__TWO_NUMBERS, targetTypes: 'cursor', valuesAsNonArray: true, template: 'I.moveCursorTo({{{target}}}, {{{value}}});' },
+    { action: 'move', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'cursor', template: 'I.moveCursorTo({{{target}}});' },
     { action: 'move', comp: CmdCmp.SAME_OPTION__ONE_TARGET__TWO_NUMBERS, options: [ 'cursor' ], valuesAsNonArray: true, template: 'I.moveCursorTo({{{target}}}, {{{value}}});' },
     { action: 'move', comp: CmdCmp.SAME_OPTION__ONE_TARGET, options: [ 'cursor' ], template: 'I.moveCursorTo({{{target}}});' },
     // open + notifications (Appium only)
@@ -77,16 +77,16 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     // press
     { action: 'press', comp: CmdCmp.ONE_VALUE_OR_NUMBER__OR_ARRAY, template: 'I.pressKey({{{value}}});' },
     // pull + file (Appium only)
-    { action: 'pull', comp: CmdCmp.TWO_VALUES_SAME_OPTION, targetType: 'fileInput', valuesAsNonArray: true, template: 'I.pullFile({{{value}}});' },
+    { action: 'pull', comp: CmdCmp.TWO_VALUES_SAME_OPTION, targetTypes: 'fileInput', valuesAsNonArray: true, template: 'I.pullFile({{{value}}});' },
     { action: 'pull', comp: CmdCmp.TWO_VALUES_SAME_OPTION, options: [ 'file' ], valuesAsNonArray: true, template: 'I.pullFile({{{value}}});' },
     // refresh + ( page | currentPage )
-    { action: 'refresh', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'page', template: 'I.refreshPage();' },
+    { action: 'refresh', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'page', template: 'I.refreshPage();' },
     { action: 'refresh', comp: CmdCmp.SAME_OPTION, options: [ 'currentPage' ], template: 'I.refreshPage();' },
     { action: 'refresh', comp: CmdCmp.SAME_OPTION, options: [ 'page' ], template: 'I.refreshPage();' },
     // remove + app (Appium only)
     { action: 'remove', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'app' ], template: 'I.removeApp({{{value}}});' },
     // resize + window
-    { action: 'resize', comp: CmdCmp.TWO_NUMBERS_SAME_TARGET_TYPE, targetType: 'window', valuesAsNonArray: true, template: 'I.resizeWindow({{{value}}});' },
+    { action: 'resize', comp: CmdCmp.TWO_NUMBERS_SAME_TARGET_TYPE, targetTypes: 'window', valuesAsNonArray: true, template: 'I.resizeWindow({{{value}}});' },
     { action: 'resize', comp: CmdCmp.TWO_NUMBERS_SAME_OPTION, options: [ 'window' ], valuesAsNonArray: true, template: 'I.resizeWindow({{{value}}});' },
     // rightClick
     { action: 'rightClick', comp: CmdCmp.ONE_TARGET, template: 'I.rightClick({{{target}}});' },
@@ -128,13 +128,13 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     // see + field as option + not + value | number
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'field' ], modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
     // see + textbox as target type + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'textbox', template: 'I.seeInField({{{target}}}, {{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'textbox', template: 'I.seeInField({{{target}}}, {{{value}}});' },
     // see + textbox as target type + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'textbox', modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'textbox', modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
     // see + textarea as target type + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'textarea', template: 'I.seeInField({{{target}}}, {{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'textarea', template: 'I.seeInField({{{target}}}, {{{value}}});' },
     // see + textarea as target type + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'textarea', modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'textarea', modifier: 'not', template: 'I.dontSeeInField({{{target}}}, {{{value}}});' },
 
     // see + target + option "class" + value
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'class' ], template: 'I.seeAttributesOnElements({{{target}}}, {{{value}}});', optionsOption: OptionsOptions.OPTION_AS_PROPERTY__FIRST_VALUE_AS_VALUE },
@@ -154,42 +154,42 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER, options: [ 'with' ], modifier: 'not', template: 'I.dontSee({{{value}}}, {{{target}}});' },
 
     // see + checkbox [+ not] + checked
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetType: 'checkbox', options: [ 'checked' ], modifier: 'not', template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetType: 'checkbox', options: [ 'checked' ], template: 'I.seeCheckboxIsChecked({{{target}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'checkbox', options: [ 'checked' ], modifier: 'not', template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'checkbox', options: [ 'checked' ], template: 'I.seeCheckboxIsChecked({{{target}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET, options: [ 'checked' ], modifier: 'not', template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET, options: [ 'checked' ], template: 'I.seeCheckboxIsChecked({{{target}}});' },
     // see + checkbox [+ not] + unchecked
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetType: 'checkbox', options: [ 'unchecked' ], modifier: 'not', template: 'I.seeCheckboxIsChecked({{{target}}});' },
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetType: 'checkbox', options: [ 'unchecked' ], template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'checkbox', options: [ 'unchecked' ], modifier: 'not', template: 'I.seeCheckboxIsChecked({{{target}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'checkbox', options: [ 'unchecked' ], template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET, options: [ 'unchecked' ], modifier: 'not', template: 'I.seeCheckboxIsChecked({{{target}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_TARGET, options: [ 'unchecked' ], template: 'I.dontSeeCheckboxIsChecked({{{target}}});' },
 
     // see + cookie + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'cookie', template: 'I.seeCookie({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'cookie', template: 'I.seeCookie({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'cookie' ], template: 'I.seeCookie({{{value}}});' },
     // see + cookie + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'cookie', modifier: 'not', template: 'I.dontSeeCookie({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'cookie', modifier: 'not', template: 'I.dontSeeCookie({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'cookie' ], modifier: 'not', template: 'I.dontSeeCookie({{{value}}});' },
 
     // see + text + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'text', template: 'I.seeTextEquals({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'text', template: 'I.seeTextEquals({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'text' ], template: 'I.seeTextEquals({{{value}}});' },
     // see + text + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'text', modifier: 'not', template: 'I.dontSeeTextEquals({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'text', modifier: 'not', template: 'I.dontSeeTextEquals({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'text' ], modifier: 'not', template: 'I.dontSeeTextEquals({{{value}}});' },
 
     // see + title + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'title', template: 'I.seeInTitle({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'title', template: 'I.seeInTitle({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'title' ], template: 'I.seeInTitle({{{value}}});' },
     // see + title + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'title', modifier: 'not', template: 'I.dontSeeInTitle({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'title', modifier: 'not', template: 'I.dontSeeInTitle({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'title' ], modifier: 'not', template: 'I.dontSeeInTitle({{{value}}});' },
 
     // see + url + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'url', template: 'I.seeInCurrentUrl({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'url', template: 'I.seeInCurrentUrl({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'url' ], template: 'I.seeInCurrentUrl({{{value}}});' },
     // see + url + not + value | number
-    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'url', modifier: 'not', template: 'I.dontSeeInCurrentUrl({{{value}}});' },
+    { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'url', modifier: 'not', template: 'I.dontSeeInCurrentUrl({{{value}}});' },
     { action: 'see', comp: CmdCmp.SAME_MODIFIER__SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'url' ], modifier: 'not', template: 'I.dontSeeInCurrentUrl({{{value}}});' },
 
     // see + target
@@ -245,17 +245,21 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'swipe', comp: CmdCmp.TWO_TARGETS, template: 'I.swipeTo({{{target}}});' },
 
     // switch + app (same as switch + currentPage)
-    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'app', template: 'I.switchTo();' },
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'app', template: 'I.switchTo();' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'app' ], template: 'I.switchTo();' },
-    // switch + page
-    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'page', template: 'I.switchTo();' },
-    { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'page' ], template: 'I.switchTo();' },
+    // switch + currentPage
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'currentPage', template: 'I.switchTo();' },
+    { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'currentPage' ], template: 'I.switchTo();' },
     // switch + frame
-    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetType: 'frame', template: 'I.switchTo("iframe");' },
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE, targetTypes: 'frame', template: 'I.switchTo("iframe");' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'frame' ], template: 'I.switchTo("iframe");' },
     // switch + frame + value
-    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE, targetType: 'frame', template: 'I.switchTo({{{value}}});' },
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE, targetTypes: 'frame', template: 'I.switchTo({{{value}}});' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'frame' ], template: 'I.switchTo({{{value}}});' },
+    // switch + frame + target
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'frame', template: 'I.switchTo({{{target}}});' },
+    { action: 'switch', comp: CmdCmp.SAME_OPTION__ONE_TARGET, options: [ 'frame' ], template: 'I.switchTo({{{target}}});' },
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: [ 'frame', 'native' ], template: 'I.switchTo({{{target}}});' },
 
     // switch + native (Appium only)
     { action: 'switch', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'native' ], template: 'I.switchToNative({{{value}}});' },
@@ -265,13 +269,13 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'web' ], template: 'I.switchToWeb();' },
 
     // switch + tab + number
-    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_NUMBER, targetType: 'tab', template: 'I.switchToNextTab({{{value}}});' },
+    { action: 'switch', comp: CmdCmp.SAME_TARGET_TYPE__ONE_NUMBER, targetTypes: 'tab', template: 'I.switchToNextTab({{{value}}});' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION__ONE_NUMBER, options: [ 'tab' ], template: 'I.switchToNextTab({{{value}}});' },
     // switch + next + tab
-    { action: 'switch', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE, targetType: 'tab', options: [ 'next' ], template: 'I.switchToNextTab();' },
+    { action: 'switch', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE, targetTypes: 'tab', options: [ 'next' ], template: 'I.switchToNextTab();' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'next', 'tab' ], template: 'I.switchToNextTab();' },
     // switch + previous + tab
-    { action: 'switch', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE, targetType: 'tab', options: [ 'previous' ], template: 'I.switchToPreviousTab();' },
+    { action: 'switch', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE, targetTypes: 'tab', options: [ 'previous' ], template: 'I.switchToPreviousTab();' },
     { action: 'switch', comp: CmdCmp.SAME_OPTION, options: [ 'previous', 'tab' ], template: 'I.switchToPreviousTab();' },
 
     // tap (Appium only)
@@ -289,10 +293,10 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'uninstall', comp: CmdCmp.ONE_VALUE, template: 'I.removeApp({{{value}}});' },
 
     // wait + url
-    { action: 'wait', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'url', options: [ 'inside' ], template: 'I.waitInUrl({{{value}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER, targetType: 'url', options: [ 'inside' ], valuesAsNonArray: true, template: 'I.waitInUrl({{{value}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE, targetType: 'url', template: 'I.waitUrlEquals({{{value}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE__ONE_NUMBER, targetType: 'url', valuesAsNonArray: true, template: 'I.waitUrlEquals({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'url', options: [ 'inside' ], template: 'I.waitInUrl({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_OPTION__SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER, targetTypes: 'url', options: [ 'inside' ], valuesAsNonArray: true, template: 'I.waitInUrl({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE, targetTypes: 'url', template: 'I.waitUrlEquals({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE__ONE_NUMBER, targetTypes: 'url', valuesAsNonArray: true, template: 'I.waitUrlEquals({{{value}}});' },
     { action: 'wait', comp: CmdCmp.SAME_OPTION__ONE_TARGET__ONE_NUMBER, options: [ 'url' ], template: 'I.waitUrlEquals({{{target}}}, {{{value}}});' },
     { action: 'wait', comp: CmdCmp.SAME_OPTION__ONE_TARGET, options: [ 'url' ], template: 'I.waitUrlEquals({{{target}}});' },
     { action: 'wait', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'url' ], template: 'I.waitUrlEquals({{{value}}});' },
@@ -326,14 +330,14 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'wait', comp: CmdCmp.SAME_OPTION__ONE_VALUE_OR_NUMBER, options: [ 'hidden' ], template: 'I.waitToHide({{{value}}});' },
 
     // wait + text
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_NUMBER, targetType: 'text', template: 'I.waitForText({{{target}}}, {{{value}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetType: 'text', template: 'I.waitForText({{{value}}}, 1, {{{target}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_NUMBER, targetTypes: 'text', template: 'I.waitForText({{{target}}}, {{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER, targetTypes: 'text', template: 'I.waitForText({{{value}}}, 1, {{{target}}});' },
 
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER__ONE_TARGET, targetType: 'text', valuesAsNonArray: true, template: 'I.waitForText({{{value}}}, {{{target}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetType: 'text', template: 'I.waitForText({{{target}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER__ONE_TARGET, targetTypes: 'text', valuesAsNonArray: true, template: 'I.waitForText({{{value}}}, {{{target}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'text', template: 'I.waitForText({{{target}}});' },
 
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER, targetType: 'text', valuesAsNonArray: true, template: 'I.waitForText({{{value}}});' },
-    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetType: 'text', template: 'I.waitForText({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER, targetTypes: 'text', valuesAsNonArray: true, template: 'I.waitForText({{{value}}});' },
+    { action: 'wait', comp: CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER, targetTypes: 'text', template: 'I.waitForText({{{value}}});' },
 
     { action: 'wait', comp: CmdCmp.SAME_OPTION__ONE_VALUE__ONE_NUMBER__ONE_TARGET, options: [ 'text' ], valuesAsNonArray: true, template: 'I.waitForText({{{value}}}, {{{target}}});' },
 

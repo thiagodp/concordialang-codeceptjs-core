@@ -10,20 +10,20 @@ export declare class ConfigMaker {
      * @param outputFile Output report file. Default is 'output.json'.
      */
     makeBasicConfig(filter?: string, output?: string, outputFile?: string): {
-        "tests": string;
-        "output": string;
-        "helpers": {};
-        "bootstrap": boolean;
-        "mocha": {
-            "reporterOptions": {
+        tests: string;
+        output: string;
+        helpers: {};
+        bootstrap: boolean;
+        mocha: {
+            reporterOptions: {
                 "codeceptjs-cli-reporter": {
-                    "stdout": string;
-                    "options": {
-                        "steps": boolean;
+                    stdout: string;
+                    options: {
+                        steps: boolean;
                     };
                 };
-                "json": {
-                    "stdout": string;
+                json: {
+                    stdout: string;
                 };
             };
         };

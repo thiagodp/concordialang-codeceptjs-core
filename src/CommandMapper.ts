@@ -112,7 +112,7 @@ export interface CmdCfg {
     comp: CmdCmp,
     modifier?: string,
     options?: string[],
-    targetType?: string,
+    targetTypes?: string | string[],
     template: string,
     optionsOption?: OptionsOptions,
     valuesAsNonArray?: boolean, // [ "a", "b" ] -> "a", "b"
@@ -256,7 +256,17 @@ export class CommandMapper {
         }
 
         function sameTargetTypes( cfg: CmdCfg, cmd: ATSCommand ): boolean {
-            return ( cmd.targetTypes || [] ).indexOf( cfg.targetType ) >= 0;
+            if ( 'string' === typeof cfg.targetTypes ) {
+                return ( cmd.targetTypes || [] ).indexOf( cfg.targetTypes ) >= 0;
+            }
+            const cmdTypes: string[] = cmd.targetTypes || [];
+            const cfgTypes: string[] = cfg.targetTypes || [];
+            for ( const configured of cfgTypes ) {
+                if ( cmdTypes.indexOf( configured ) < 0 ) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         function includeOptions( from: CmdCfg, into: ATSCommand ): boolean {

@@ -201,7 +201,17 @@ class CommandMapper {
             return 'number' === typeof x || !isNaN(parseInt(x));
         }
         function sameTargetTypes(cfg, cmd) {
-            return (cmd.targetTypes || []).indexOf(cfg.targetType) >= 0;
+            if ('string' === typeof cfg.targetTypes) {
+                return (cmd.targetTypes || []).indexOf(cfg.targetTypes) >= 0;
+            }
+            const cmdTypes = cmd.targetTypes || [];
+            const cfgTypes = cfg.targetTypes || [];
+            for (const configured of cfgTypes) {
+                if (cmdTypes.indexOf(configured) < 0) {
+                    return false;
+                }
+            }
+            return true;
         }
         function includeOptions(from, into) {
             let targetOptions = into.options || [];

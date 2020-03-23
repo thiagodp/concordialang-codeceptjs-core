@@ -4,9 +4,7 @@
 
 # concordialang-codeceptjs-core
 
-> Concordia compiler plug-in core for CodeceptJS
-
-This is not a plug-in, but a plug-in core.
+> Concordia compiler plug-in core modules for CodeceptJS
 
 ## [What's New](https://github.com/thiagodp/concordialang-codeceptjs-core/releases)
 
@@ -115,8 +113,8 @@ The following table lists the support to the [Concordia Language Actions](https:
  | see + app + installed                            | seeAppIsInstalled ✓ (Appium only)                                                 |
  | see + app + installed + not                      | seeAppIsNotInstalled ✓ (Appium only)                                              |
  | see + ( uielement OR uiliteral ) + attribute + value  | seeAttributesOnElements ✓ |
- | see + ( uielement OR uiliteral ) + class + value      | _(same above)_ |
- | see + ( uielement OR uiliteral ) + style + value      | _(same above)_ |
+ | see + ( uielement OR uiliteral ) + class + value      | _(same as above)_ |
+ | see + ( uielement OR uiliteral ) + style + value      | _(same as above)_ |
  | see + checkbox                                   | seeCheckboxIsChecked ✓                                                            |
  | see + cookie                                     | seeCookie ✓                                                                       |
  | -                                                | seeCssPropertiesOnElements                                                        |
@@ -147,6 +145,8 @@ The following table lists the support to the [Concordia Language Actions](https:
  | swipe + right                                    | swipeRight ✓ (Appium only)                                                        |
  | swipe + up                                       | swipeUp ✓ (Appium only)                                                           |
  | swipe + targets                                  | swipeTo ✓ (Appium only)                                                           |
+ | switch + frame                                   | switchTo('iframe') ✓ |
+ | switch + locator                                 | switchTo ✓ |
  | switch + native                                  | switchToNative ✓ (Appium only)                                                    |
  | switch + web                                     | switchToWeb ✓ (Appium only)                                                       |
  | switch + tab + number                            | switchToNextTab ✓                                                                 |

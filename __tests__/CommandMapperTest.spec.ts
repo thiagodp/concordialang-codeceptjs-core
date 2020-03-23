@@ -1403,6 +1403,26 @@ describe( 'CommandMapperTest', () => {
             expect( r ).toContainEqual( 'I.switchTo("#foo");' + comment );
         } );
 
+        it( 'target type frame, target', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'frame' ],
+                targets: [ "#foo" ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( `I.switchTo('#foo');` + comment );
+        } );
+
+        it( 'two target types including frame, target', () => {
+            let cmd: ATSCommand = {
+                action: 'switch',
+                targetTypes: [ 'frame', 'frame' ],
+                targets: [ "#foo" ]
+            };
+            const r = cm.map( cmd );
+            expect( r ).toContainEqual( `I.switchTo('#foo');` + comment );
+        } );
+
     } );
 
 
