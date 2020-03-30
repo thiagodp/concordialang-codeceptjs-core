@@ -4,7 +4,7 @@ import { TestScriptExecutionResult, TestSuiteResult, TestMethodResult } from 'co
 
 import { ReportConverter } from '../src/ReportConverter';
 
-describe( 'ReportConverterTest', () => {
+describe( 'ReportConverter', () => {
 
     // helper variables
 

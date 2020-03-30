@@ -4,7 +4,7 @@ import { TestScriptGenerator } from "../src/TestScriptGenerator";
 import { CommandMapper } from '../src/CommandMapper'
 import { CODECEPTJS_COMMANDS } from '../src/Commands';
 
-describe( 'TestScriptGeneratorTest', () => {
+describe( 'TestScriptGenerator', () => {
 
     let gen: TestScriptGenerator; // under test
 

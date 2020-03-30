@@ -39,6 +39,8 @@ export enum CmdCmp {
     SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE_OR_NUMBER,
     SAME_TARGET_TYPE__ONE_TARGET__ONE_VALUE__ONE_NUMBER,
 
+    SAME_TARGET_TYPE__MANY_TARGETS,
+
     SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER,
     SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER,
     SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER__ONE_NUMBER__ONE_TARGET,
@@ -62,6 +64,8 @@ export enum CmdCmp {
     SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER,
     SAME_OPTION__ONE_TARGET__ONE_VALUE_OR_NUMBER__ONE_NUMBER,
     SAME_OPTION__ONE_TARGET__ONE_VALUE__ONE_NUMBER,
+
+    SAME_OPTION__MANY_TARGETS,
 
     SAME_OPTION__SAME_TARGET_TYPE,
     SAME_OPTION__SAME_TARGET_TYPE__ONE_NUMBER,
@@ -127,7 +131,20 @@ export interface CmdCfg {
  */
 export class CommandMapper {
 
+    private _withinCount: number = 0;
+
     constructor( protected commands: CmdCfg[] ) {
+    }
+
+    public withinCount(): number {
+        return this._withinCount;
+    }
+
+    private setWithinCount( value: number ): void {
+        this._withinCount = value;
+        if ( this._withinCount < 0 ) {
+            this._withinCount = 0;
+        }
     }
 
     /**
@@ -136,12 +153,10 @@ export class CommandMapper {
      * @param cmd Abstract test script command
      */
     map( cmd: ATSCommand ): string[] {
-
         let cmdCfg = this.commands.find( cfg => this.areCompatible( cfg, cmd ) );
         if ( ! cmdCfg ) {
             return [];
         }
-        // if ( cmd.action === 'swipe' ) console.log( cmd, cmdCfg );
         return this.makeCommands( cmdCfg, cmd );
     }
 
@@ -161,6 +176,7 @@ export class CommandMapper {
         }
 
         const COMMENT_TEMPLATE = ' // ({{{location.line}}},{{{location.column}}}){{#comment}} {{{comment}}}{{/comment}}';
+        const TABULATION = "\t";
 
         if ( !! cmd[ "db" ] && cmd.action === 'connect' ) {
 
@@ -169,14 +185,30 @@ export class CommandMapper {
                 location : cmd.location,
                 comment: cmd.comment,
             };
+
             const template = cfg.template + COMMENT_TEMPLATE;
 
             return [ render( template, values ) ];
         }
 
-        const template = cfg.template + COMMENT_TEMPLATE;
 
-        let valueToRender = ! cmd.values ? '' : this.valuesToParameters( cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues );
+        let result: string[] = [];
+
+        if ( 'switch' === cmd.action && this.withinCount() > 0 ) {
+
+            // Add "} );" if it already is in a "within"
+            const endWithinBlock = '});';
+            const tabs = TABULATION.repeat( this.withinCount() - 1 );
+            result.push( `${tabs}${endWithinBlock}` );
+
+            // Set to 0 instead of decreasing, since current
+            // implementation will avoid a within inside a within.
+            this.setWithinCount( 0 );
+        }
+
+        let valueToRender = ! cmd.values
+            ? ''
+            : this.valuesToParameters( cmd.values, cfg.valuesAsNonArray, cfg.singleQuotedValues );
 
         switch ( cfg.optionsOption ) {
 
@@ -201,7 +233,7 @@ export class CommandMapper {
         }
 
         const values = {
-            target   : ! cmd.targets ? '' : this.targetsToParameters( cmd.targets, cfg.singleQuotedTargets ),
+            target   : ! cmd.targets ? '' : this.targetsToParameters( cmd.targets, cfg.valuesAsNonArray, cfg.singleQuotedTargets ),
             value    : valueToRender,
             location : cmd.location,
             comment  : cmd.comment,
@@ -209,7 +241,25 @@ export class CommandMapper {
             options  : cmd.options,
         };
 
-        return [ render( template, values ) ];
+        const tabs = TABULATION.repeat( this.withinCount() );
+        const template = tabs + cfg.template + COMMENT_TEMPLATE;
+
+        const rendered: string = render( template, values );
+        result.push( rendered );
+
+        // Switch with multiple frames
+        if ( 'switch' === cmd.action
+            && ( cmd.targetTypes || [] ).includes( 'frame' )
+            && ( ( cmd.targets || [] ).length > 1 )
+        ) {
+            // const value = cmd.targets.length - 1;
+            // this.setWithinCount( value );
+            // Set to 1 instead of increasing, since current
+            // implementation will avoid a within inside a within.
+            this.setWithinCount( 1 );
+        }
+
+        return result;
     }
 
     /**
@@ -585,6 +635,11 @@ export class CommandMapper {
                 return oneValueThenNumbers( cmd, 1, true );
             }
 
+            case CmdCmp.SAME_TARGET_TYPE__MANY_TARGETS: {
+                return targetsCount > 1
+                    && sameTargetTypes( cfg, cmd );
+            }
+
             case CmdCmp.SAME_TARGET_TYPE__ONE_VALUE_OR_NUMBER: {
                 return 1 === valuesCount &&
                     sameTargetTypes( cfg, cmd );
@@ -641,6 +696,11 @@ export class CommandMapper {
                 return 1 === targetsCount &&
                     includeOptions( cfg, cmd ) &&
                     oneValueThenOneNumber( cmd );
+            }
+
+            case CmdCmp.SAME_OPTION__MANY_TARGETS: {
+                return targetsCount > 1 &&
+                    includeOptions( cfg, cmd );
             }
 
             case CmdCmp.SAME_OPTION__SAME_TARGET_TYPE: {
@@ -812,7 +872,11 @@ export class CommandMapper {
      * @param targets Targets to convert, usually UI literals.
      * @param singleQuotedTargets Whether the targets should be wrapped with single quotes.
      */
-    private targetsToParameters( targets: string[] | any[], singleQuotedTargets?: boolean ): string {
+    private targetsToParameters(
+        targets: string[] | any[],
+        valueAsNonArrayWhenGreaterThanOne?: boolean,
+        singleQuotedTargets?: boolean
+    ): string {
 
         if ( 0 === targets.length ) {
             return '';
@@ -824,9 +888,14 @@ export class CommandMapper {
             if ( 1 === targets.length ) {
                 return this.convertSingleTarget( strTargets[ 0 ], singleQuotedTargets );
             }
-            return strTargets
+            const joint = strTargets
                 .map( v => this.convertSingleTarget( v, singleQuotedTargets ) )
                 .join( ', ' );
+
+            if ( ! valueAsNonArrayWhenGreaterThanOne ) {
+                return '[' + joint + ']';
+            }
+            return joint;
         }
 
         function valueReplacer( key, value ) {

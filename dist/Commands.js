@@ -25,7 +25,7 @@ exports.CODECEPTJS_COMMANDS = [
     // check
     { action: 'check', comp: CommandMapper_1.CmdCmp.ONE_VALUE__ONE_TARGET, template: 'I.checkOption({{{value}}}, {{{target}}});' },
     { action: 'check', comp: CommandMapper_1.CmdCmp.ONE_TARGET, template: 'I.checkOption({{{target}}});' },
-    { action: 'check', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.checkOption({{{target}}});' },
+    { action: 'check', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.checkOption({{{target}}});', valuesAsNonArray: true },
     { action: 'check', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER, template: 'I.checkOption({{{value}}});' },
     // clear + cookie
     { action: 'clear', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'cookie', template: 'I.clearCookie({{{target}}});' },
@@ -38,7 +38,7 @@ exports.CODECEPTJS_COMMANDS = [
     { action: 'click', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER__ONE_TARGET, template: 'I.click({{{value}}}, {{{target}}});' },
     { action: 'click', comp: CommandMapper_1.CmdCmp.ONE_TARGET, template: 'I.click({{{target}}});' },
     { action: 'click', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER, template: 'I.click({{{value}}});' },
-    { action: 'click', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.click({{{target}}});' },
+    { action: 'click', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.click({{{target}}});', valuesAsNonArray: true },
     // close + app (Appium only)
     { action: 'close', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['app'], template: 'I.closeApp();' },
     // close + currentTab
@@ -55,9 +55,9 @@ exports.CODECEPTJS_COMMANDS = [
     { action: 'doubleClick', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER__ONE_TARGET, template: 'I.doubleClick({{{value}}}, {{{target}}});' },
     { action: 'doubleClick', comp: CommandMapper_1.CmdCmp.ONE_TARGET, template: 'I.doubleClick({{{target}}});' },
     { action: 'doubleClick', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER, template: 'I.doubleClick({{{value}}});' },
-    { action: 'doubleClick', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.doubleClick({{{target}}});' },
+    { action: 'doubleClick', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.doubleClick({{{target}}});', valuesAsNonArray: true },
     // drag
-    { action: 'drag', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.dragAndDrop({{{target}}});' },
+    { action: 'drag', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.dragAndDrop({{{target}}});', valuesAsNonArray: true },
     // fill
     { action: 'fill', comp: CommandMapper_1.CmdCmp.ONE_TARGET__ONE_VALUE_OR_NUMBER, template: 'I.fillField({{{target}}}, {{{value}}});' },
     // hide + keyboard (Appium only)
@@ -228,7 +228,7 @@ exports.CODECEPTJS_COMMANDS = [
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.ONE_TARGET__THREE_NUMBERS, valuesAsNonArray: true, template: 'I.swipe({{{target}}}, {{{value}}});' },
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.ONE_VALUE__TWO_NUMBERS, valuesAsNonArray: true, template: 'I.swipe({{{value}}});' },
     { action: 'swipe', comp: CommandMapper_1.CmdCmp.ONE_VALUE__THREE_NUMBERS, valuesAsNonArray: true, template: 'I.swipe({{{value}}});' },
-    { action: 'swipe', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.swipeTo({{{target}}});' },
+    { action: 'swipe', comp: CommandMapper_1.CmdCmp.TWO_NUMBERS, template: 'I.performSwipe({{{value}}});', valuesAsNonArray: true },
     // switch + app (same as switch + currentPage)
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE, targetTypes: 'app', template: 'I.switchTo();' },
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['app'], template: 'I.switchTo();' },
@@ -244,7 +244,9 @@ exports.CODECEPTJS_COMMANDS = [
     // switch + frame + target
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'frame', template: 'I.switchTo({{{target}}});' },
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION__ONE_TARGET, options: ['frame'], template: 'I.switchTo({{{target}}});' },
-    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: ['frame', 'native'], template: 'I.switchTo({{{target}}});' },
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: ['frame', 'frame'], template: 'I.switchTo({{{target}}});' },
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_TARGET_TYPE__MANY_TARGETS, targetTypes: ['frame', 'frame'], template: 'within({ frame: {{{target}}} }, function() {', valuesAsNonArray: false },
+    { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION__MANY_TARGETS, options: ['inside'], template: 'within({ frame: {{{target}}} }, function() {', valuesAsNonArray: false },
     // switch + native (Appium only)
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION__ONE_VALUE, options: ['native'], template: 'I.switchToNative({{{value}}});' },
     { action: 'switch', comp: CommandMapper_1.CmdCmp.SAME_OPTION, options: ['native'], template: 'I.switchToNative();' },
@@ -266,7 +268,7 @@ exports.CODECEPTJS_COMMANDS = [
     // uncheck
     { action: 'uncheck', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER__ONE_TARGET, template: 'I.uncheckOption({{{value}}}, {{{target}}});' },
     { action: 'uncheck', comp: CommandMapper_1.CmdCmp.ONE_TARGET, template: 'I.uncheckOption({{{target}}});' },
-    { action: 'uncheck', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.uncheckOption({{{target}}});' },
+    { action: 'uncheck', comp: CommandMapper_1.CmdCmp.TWO_TARGETS, template: 'I.uncheckOption({{{target}}});', valuesAsNonArray: true },
     { action: 'uncheck', comp: CommandMapper_1.CmdCmp.ONE_VALUE_OR_NUMBER, template: 'I.uncheckOption({{{value}}});' },
     // uninstall (Appium only)
     { action: 'uninstall', comp: CommandMapper_1.CmdCmp.SAME_OPTION__ONE_VALUE, options: ['app'], template: 'I.removeApp({{{value}}});' },
