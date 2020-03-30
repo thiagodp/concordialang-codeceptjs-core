@@ -33,9 +33,10 @@
         "dist/*"
     ],
     "scripts": {
-        "build": "(rimraf dist || echo \"rimraf not installed\") && tsc",
+        "build": "rimraf dist && tsc",
         "test": "jest --passWithNoTests",
         "all": "npm run build && npm run test",
+        "preversion": "npm run all",
         "postversion": "git push && git push --tags"
     },
     "jest": {
@@ -47,7 +48,8 @@
             "ts",
             "tsx",
             "js"
-        ]
+        ],
+        "testEnvironment": "node"
     },
     "dependencies": {
         "chalk": "^2.4.2",
