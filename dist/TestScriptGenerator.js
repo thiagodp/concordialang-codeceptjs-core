@@ -1,17 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mustache_1 = require("mustache");
-const dedent = require('dedent-js');
-const logSymbols = require("log-symbols");
 const chalk_1 = require("chalk");
+const logSymbols = require("log-symbols");
+const mustache_1 = require("mustache");
+const path_1 = require("path");
+const dedent = require('dedent-js');
 /**
  * Generate test scripts for CodeceptJS.
  *
  * Uses [Mustache](https://github.com/janl/mustache.js/) for this purpose.
  */
 class TestScriptGenerator {
-    constructor(mapper) {
-        this.mapper = mapper;
+    constructor(_mapper, _specificationDir) {
+        this._mapper = _mapper;
+        this._specificationDir = _specificationDir;
         this.template =
             dedent `// Generated with ❤ by Concordia
         // source: {{{sourceFile}}}
@@ -67,7 +69,7 @@ class TestScriptGenerator {
         for (let test of obj.testcases || []) {
             test.convertedCommands = [];
             for (let cmd of test.commands || []) {
-                let converted = this.analyzeConverted(this.mapper.map(cmd), cmd, ats);
+                let converted = this.analyzeConverted(this._mapper.map(cmd), cmd, ats);
                 test.convertedCommands.push.apply(test.convertedCommands, converted);
             }
         }
@@ -79,7 +81,7 @@ class TestScriptGenerator {
             }
             event.convertedCommands = [];
             for (let cmd of event.commands || []) {
-                let converted = this.analyzeConverted(this.mapper.map(cmd), cmd, ats);
+                let converted = this.analyzeConverted(this._mapper.map(cmd), cmd, ats);
                 event.convertedCommands.push.apply(event.convertedCommands, converted);
             }
         }
@@ -87,8 +89,11 @@ class TestScriptGenerator {
     }
     analyzeConverted(converted, cmd, ats) {
         if (0 === converted.length) {
-            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk_1.default.yellowBright(ats.sourceFile), '(' + cmd.location.line + ',' + cmd.location.column + ')');
-            return [this.mapper.makeCommentWithCommand(cmd)];
+            const filePath = this._specificationDir
+                ? path_1.relative(this._specificationDir, ats.sourceFile)
+                : ats.sourceFile;
+            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk_1.default.yellowBright(filePath), '(' + cmd.location.line + ',' + cmd.location.column + ')');
+            return [this._mapper.makeCommentWithCommand(cmd)];
         }
         return converted;
     }

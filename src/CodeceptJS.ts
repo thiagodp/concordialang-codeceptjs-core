@@ -1,16 +1,14 @@
+import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions } from 'concordialang-plugin';
 import * as fs from 'fs';
-import { join, parse } from 'path';
-import { promisify } from 'util';
 import * as fse from 'node-fs-extra';
-import { AbstractTestScript, TestScriptGenerationOptions, TestScriptExecutionOptions, TestScriptExecutionResult } from 'concordialang-plugin';
-import { Plugin } from 'concordialang-plugin';
-
+import { basename, dirname, join, relative, resolve } from 'path';
+import { promisify } from 'util';
+import { CommandMapper } from './CommandMapper';
+import { CODECEPTJS_COMMANDS } from './Commands';
+import { ConfigMaker } from './ConfigMaker';
+import { ReportConverter } from './ReportConverter';
 import { TestScriptExecutor } from './TestScriptExecutor';
 import { TestScriptGenerator } from './TestScriptGenerator';
-import { ReportConverter } from './ReportConverter';
-import { CommandMapper } from './CommandMapper';
-import { ConfigMaker } from './ConfigMaker';
-import { CODECEPTJS_COMMANDS } from './Commands';
 
 /**
  * Plugin for CodeceptJS.
@@ -42,11 +40,23 @@ export abstract class CodeceptJS implements Plugin {
         options: TestScriptGenerationOptions,
         errors: Error[]
     ): Promise< string[] > {
+
+        const scriptGenerator = this.createTestScriptGenerator( options.specificationDir );
+
         let files: string[] = [];
         for ( let ats of abstractTestScripts || [] ) {
+
+            const outputFilePath: string = this.createFilePath(
+                options.sourceCodeDir, ats.sourceFile, options.specificationDir );
+
             try {
-                let file = await this.processTestScript( ats, options.sourceCodeDir );
-                files.push( file );
+                await this.ensureDir( dirname( outputFilePath ) );
+
+                const code: string = scriptGenerator.generate( ats );
+
+                await this.writeFile( outputFilePath, code );
+
+                files.push( outputFilePath );
             } catch ( e ) {
                 const msg = 'Error generating script for "' + ats.sourceFile + '": ' + e.message;
                 errors.push( new Error( msg ) );
@@ -74,32 +84,29 @@ export abstract class CodeceptJS implements Plugin {
     }
 
     /**
-     * Tries to generate a source code file from an abstract test script.
+     * Creates a test script file path.
      *
-     * *Important*: This function should keep the fat arrow style, () => {}, in
-     * order to preverse the context of `this`.
-     *
-     * @param ats Abstract test script
-     * @param targetDir Directory where to put the source code.
-     * @returns A promise with the file name as the data.
+     * @param targetDir Target directory, e.g. `tests`
+     * @param specFilePath Specification file, e.g. `path/to/features/sub1/sub2/f1.testcase`
+     * @param specDir Specification directory, e.g. `path/to/features/`
      */
-    private async processTestScript( ats: AbstractTestScript, targetDir: string ): Promise< string > {
+    private createFilePath(
+        targetDir: string,
+        specFilePath: string,
+        specDir?: string
+    ): string {
 
-        await this.ensureDir( targetDir );
+        const relSpecFilePath: string = specDir
+            ? relative( specDir, specFilePath )
+            : specFilePath;
 
-        // Prepare file path
-        const parsed = parse( ats.sourceFile );
-        const fileName: string = parsed.name + '.js';
-        const filePath: string = join( targetDir, fileName );
+        const outputDir: string = specDir
+            ? resolve( targetDir, dirname( relSpecFilePath ) )
+            : targetDir;
 
-        // Generate content
-        const scriptGenerator = this.createTestScriptGenerator();
-        const code: string = scriptGenerator.generate( ats );
+        const fileName: string = basename( relSpecFilePath, '.testcase' ) + '.js';
 
-        // Write content
-        await this.writeFile( filePath, code );
-
-        return filePath;
+        return join( outputDir, fileName );
     }
 
     private async ensureDir( dir: string ): Promise< void > {
@@ -114,9 +121,10 @@ export abstract class CodeceptJS implements Plugin {
         await write( path, content, this._encoding );
     }
 
-    protected createTestScriptGenerator(): TestScriptGenerator {
+    protected createTestScriptGenerator( specificationDir?: string): TestScriptGenerator {
         return new TestScriptGenerator(
-            new CommandMapper( CODECEPTJS_COMMANDS )
+            new CommandMapper( CODECEPTJS_COMMANDS ),
+            specificationDir
         );
     }
 

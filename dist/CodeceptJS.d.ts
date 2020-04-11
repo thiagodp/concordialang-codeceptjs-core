@@ -1,5 +1,4 @@
-import { AbstractTestScript, TestScriptGenerationOptions, TestScriptExecutionOptions, TestScriptExecutionResult } from 'concordialang-plugin';
-import { Plugin } from 'concordialang-plugin';
+import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions } from 'concordialang-plugin';
 import { TestScriptExecutor } from './TestScriptExecutor';
 import { TestScriptGenerator } from './TestScriptGenerator';
 /**
@@ -26,18 +25,15 @@ export declare abstract class CodeceptJS implements Plugin {
     /** @inheritDoc */
     defaultReportFile(): Promise<string>;
     /**
-     * Tries to generate a source code file from an abstract test script.
+     * Creates a test script file path.
      *
-     * *Important*: This function should keep the fat arrow style, () => {}, in
-     * order to preverse the context of `this`.
-     *
-     * @param ats Abstract test script
-     * @param targetDir Directory where to put the source code.
-     * @returns A promise with the file name as the data.
+     * @param targetDir Target directory, e.g. `tests`
+     * @param specFilePath Specification file, e.g. `path/to/features/sub1/sub2/f1.testcase`
+     * @param specDir Specification directory, e.g. `path/to/features/`
      */
-    private processTestScript;
+    private createFilePath;
     private ensureDir;
     private writeFile;
-    protected createTestScriptGenerator(): TestScriptGenerator;
+    protected createTestScriptGenerator(specificationDir?: string): TestScriptGenerator;
     protected createTestScriptExecutor(options: TestScriptExecutionOptions): TestScriptExecutor;
 }

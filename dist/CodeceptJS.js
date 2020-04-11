@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
+const fse = require("node-fs-extra");
 const path_1 = require("path");
 const util_1 = require("util");
-const fse = require("node-fs-extra");
+const CommandMapper_1 = require("./CommandMapper");
+const Commands_1 = require("./Commands");
+const ConfigMaker_1 = require("./ConfigMaker");
+const ReportConverter_1 = require("./ReportConverter");
 const TestScriptExecutor_1 = require("./TestScriptExecutor");
 const TestScriptGenerator_1 = require("./TestScriptGenerator");
-const ReportConverter_1 = require("./ReportConverter");
-const CommandMapper_1 = require("./CommandMapper");
-const ConfigMaker_1 = require("./ConfigMaker");
-const Commands_1 = require("./Commands");
 /**
  * Plugin for CodeceptJS.
  */
@@ -38,11 +38,15 @@ class CodeceptJS {
     /** @inheritDoc */
     generateCode(abstractTestScripts, options, errors) {
         return __awaiter(this, void 0, void 0, function* () {
+            const scriptGenerator = this.createTestScriptGenerator(options.specificationDir);
             let files = [];
             for (let ats of abstractTestScripts || []) {
+                const outputFilePath = this.createFilePath(options.sourceCodeDir, ats.sourceFile, options.specificationDir);
                 try {
-                    let file = yield this.processTestScript(ats, options.sourceCodeDir);
-                    files.push(file);
+                    yield this.ensureDir(path_1.dirname(outputFilePath));
+                    const code = scriptGenerator.generate(ats);
+                    yield this.writeFile(outputFilePath, code);
+                    files.push(outputFilePath);
                 }
                 catch (e) {
                     const msg = 'Error generating script for "' + ats.sourceFile + '": ' + e.message;
@@ -74,29 +78,21 @@ class CodeceptJS {
         });
     }
     /**
-     * Tries to generate a source code file from an abstract test script.
+     * Creates a test script file path.
      *
-     * *Important*: This function should keep the fat arrow style, () => {}, in
-     * order to preverse the context of `this`.
-     *
-     * @param ats Abstract test script
-     * @param targetDir Directory where to put the source code.
-     * @returns A promise with the file name as the data.
+     * @param targetDir Target directory, e.g. `tests`
+     * @param specFilePath Specification file, e.g. `path/to/features/sub1/sub2/f1.testcase`
+     * @param specDir Specification directory, e.g. `path/to/features/`
      */
-    processTestScript(ats, targetDir) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.ensureDir(targetDir);
-            // Prepare file path
-            const parsed = path_1.parse(ats.sourceFile);
-            const fileName = parsed.name + '.js';
-            const filePath = path_1.join(targetDir, fileName);
-            // Generate content
-            const scriptGenerator = this.createTestScriptGenerator();
-            const code = scriptGenerator.generate(ats);
-            // Write content
-            yield this.writeFile(filePath, code);
-            return filePath;
-        });
+    createFilePath(targetDir, specFilePath, specDir) {
+        const relSpecFilePath = specDir
+            ? path_1.relative(specDir, specFilePath)
+            : specFilePath;
+        const outputDir = specDir
+            ? path_1.resolve(targetDir, path_1.dirname(relSpecFilePath))
+            : targetDir;
+        const fileName = path_1.basename(relSpecFilePath, '.testcase') + '.js';
+        return path_1.join(outputDir, fileName);
     }
     ensureDir(dir) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -112,8 +108,8 @@ class CodeceptJS {
             yield write(path, content, this._encoding);
         });
     }
-    createTestScriptGenerator() {
-        return new TestScriptGenerator_1.TestScriptGenerator(new CommandMapper_1.CommandMapper(Commands_1.CODECEPTJS_COMMANDS));
+    createTestScriptGenerator(specificationDir) {
+        return new TestScriptGenerator_1.TestScriptGenerator(new CommandMapper_1.CommandMapper(Commands_1.CODECEPTJS_COMMANDS), specificationDir);
     }
     createTestScriptExecutor(options) {
         const scriptFileFilter = path_1.join(options.sourceCodeDir, '**/*.js');
