@@ -1,8 +1,7 @@
 import { AbstractTestScript } from 'concordialang-plugin';
-
-import { TestScriptGenerator } from "../src/TestScriptGenerator";
-import { CommandMapper } from '../src/CommandMapper'
+import { CommandMapper } from '../src/CommandMapper';
 import { CODECEPTJS_COMMANDS } from '../src/Commands';
+import { TestScriptGenerator } from "../src/TestScriptGenerator";
 
 describe( 'TestScriptGenerator', () => {
 

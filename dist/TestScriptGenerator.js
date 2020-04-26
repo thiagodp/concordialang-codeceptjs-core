@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const logSymbols = require("log-symbols");
 const mustache_1 = require("mustache");
 const path_1 = require("path");
@@ -92,7 +92,7 @@ class TestScriptGenerator {
             const filePath = this._specificationDir
                 ? path_1.relative(this._specificationDir, ats.sourceFile)
                 : ats.sourceFile;
-            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk_1.default.yellowBright(filePath), '(' + cmd.location.line + ',' + cmd.location.column + ')');
+            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk.yellowBright(filePath), '(' + cmd.location.line + ',' + cmd.location.column + ')');
             return [this._mapper.makeCommentWithCommand(cmd)];
         }
         return converted;

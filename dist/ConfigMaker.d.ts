@@ -25,6 +25,26 @@ export declare class ConfigMaker {
                 json: {
                     stdout: string;
                 };
+                mochawesome: {
+                    stdout: string;
+                    options: {
+                        reportDir: string;
+                        reportFilename: string;
+                        uniqueScreenshotNames: boolean;
+                        timestamp: boolean;
+                    };
+                };
+            };
+        };
+        /**
+         * Não afeta execução normal, mas só se rodar com
+         * `codeceptjs run-parallel parallel`
+         *
+         * @see TestScriptExecutor
+         */
+        multiple: {
+            parallel: {
+                chunks: number;
             };
         };
     };
@@ -40,11 +60,11 @@ export declare class ConfigMaker {
      * Sets a Appium helper.
      *
      * @param config Target configuration.
-     * @param plataform Plataform. Default is "Android".
+     * @param platform Platform. Default is "Android".
      * @param app Application url or path. Default is "http://localhost".
      * @param device Device. Default is "emulator".
      */
-    setAppiumHelper(config: any, plataform?: any, app?: string, device?: string): void;
+    setAppiumHelper(config: any, platform?: any, app?: string, device?: string): void;
     /**
      * Sets a DBHelper
      *

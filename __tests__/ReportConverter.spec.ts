@@ -1,7 +1,6 @@
+import { TestMethodResult, TestScriptExecutionResult, TestSuiteResult } from 'concordialang-plugin';
+import { fs as memfs, vol } from 'memfs';
 import { join, normalize } from 'path';
-import { vol, fs as memfs } from 'memfs';
-import { TestScriptExecutionResult, TestSuiteResult, TestMethodResult } from 'concordialang-plugin';
-
 import { ReportConverter } from '../src/ReportConverter';
 
 describe( 'ReportConverter', () => {
@@ -17,11 +16,11 @@ describe( 'ReportConverter', () => {
     const scriptFileLine = 5;
     const scriptFileColumn = 7;
 
-    const stackTrace = `expected web page to include "vai falhar"
+    const stackTrace = `expected web page to include "it will fail"
 
         Scenario Steps:
 
-        - I.see( "vai falhar" ) at Test.Scenario (${scriptFilePath}:${scriptFileLine}:${scriptFileColumn})
+        - I.see( "it will fail" ) at Test.Scenario (${scriptFilePath}:${scriptFileLine}:${scriptFileColumn})
         - I.amOnPage( "/" ) at Test.Scenario (${scriptFilePath}:${scriptFileLine}:${scriptFileColumn - 1})`;
 
     const specFilePath = 'path/to/login.feature';
@@ -57,14 +56,14 @@ describe( 'ReportConverter', () => {
                         "jar": "web page",
                         "customMessage": "",
                         "type": "to include",
-                        "needle": "vai falhar",
-                        "haystack": "Login\nEntrar"
+                        "needle": "it will fail",
+                        "haystack": "Login\nEnter"
                     },
                     "template": "{{customMessage}}expected {{jar}} {{type}} \"{{needle}}\"",
                     "showDiff": true,
-                    "actual": "Login\nEntrar",
-                    "expected": "vai falhar",
-                    "message": "expected web page to include \"vai falhar\"",
+                    "actual": "Login\nEnter",
+                    "expected": "it will fail",
+                    "message": "expected web page to include \"it will fail\"",
                     "stack": stackTrace
                 }
             }
@@ -81,14 +80,14 @@ describe( 'ReportConverter', () => {
                         "jar": "web page",
                         "customMessage": "",
                         "type": "to include",
-                        "needle": "vai falhar",
-                        "haystack": "Login\nEntrar"
+                        "needle": "it will fail",
+                        "haystack": "Login\nEnter"
                     },
                     "template": "{{customMessage}}expected {{jar}} {{type}} \"{{needle}}\"",
                     "showDiff": true,
-                    "actual": "Login\nEntrar",
-                    "expected": "vai falhar",
-                    "message": "expected web page to include \"vai falhar\"",
+                    "actual": "Login\nEnter",
+                    "expected": "it will fail",
+                    "message": "expected web page to include \"it will fail\"",
                     "stack": stackTrace
                 }
             }
@@ -161,7 +160,7 @@ describe( 'ReportConverter', () => {
         expectedMethod2.name = 'unsuccessful login';
         expectedMethod2.status = 'failed';
         expectedMethod2.exception = {
-            message: 'expected web page to include "vai falhar"',
+            message: 'expected web page to include "it will fail"',
             stackTrace: stackTrace,
             type: 'to include',
 
@@ -198,7 +197,6 @@ describe( 'ReportConverter', () => {
         expected.plugin = {
             description: 'Generates test scripts for CodeceptJS',
             name: 'codeceptjs',
-            targets: [ "CodeceptJS" ],
             version: '0.1'
         };
         expected.results = [ expectedSuite ];

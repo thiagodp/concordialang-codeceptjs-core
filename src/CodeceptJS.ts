@@ -1,4 +1,4 @@
-import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions } from 'concordialang-plugin';
+import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions, TestScriptGenerationResult } from 'concordialang-plugin';
 import * as fs from 'fs';
 import * as fse from 'node-fs-extra';
 import { basename, dirname, join, relative, resolve } from 'path';
@@ -30,16 +30,17 @@ export abstract class CodeceptJS implements Plugin {
         fsToUse?: any,
         private _encoding: string = 'utf8'
     ) {
-        this._descriptorPath = descriptorPath || join( __dirname, '../', 'codeceptjs.json' );
+        this._descriptorPath = descriptorPath || join( process.cwd(), 'codecept.json' );
         this._fs = ! fsToUse ? fs : fsToUse;
     }
 
     /** @inheritDoc */
     public async generateCode(
         abstractTestScripts: AbstractTestScript[],
-        options: TestScriptGenerationOptions,
-        errors: Error[]
-    ): Promise< string[] > {
+        options: TestScriptGenerationOptions
+    ): Promise< TestScriptGenerationResult > {
+
+        const errors: Error[] = [];
 
         const scriptGenerator = this.createTestScriptGenerator( options.specificationDir );
 
@@ -50,7 +51,10 @@ export abstract class CodeceptJS implements Plugin {
                 options.sourceCodeDir, ats.sourceFile, options.specificationDir );
 
             try {
-                await this.ensureDir( dirname( outputFilePath ) );
+                const dir = dirname( outputFilePath );
+                await this.ensureDir( dir );
+                // console.log( '> Ensuring dir', dir );
+                // console.log( '> File is', outputFilePath );
 
                 const code: string = scriptGenerator.generate( ats );
 
@@ -62,12 +66,13 @@ export abstract class CodeceptJS implements Plugin {
                 errors.push( new Error( msg ) );
             }
         }
-        return files;
+
+        return { generatedFiles: files, errors: errors };
     }
 
     /** @inheritDoc */
     public async executeCode( options: TestScriptExecutionOptions ): Promise< TestScriptExecutionResult > {
-        const scriptExecutor = this.createTestScriptExecutor( options );
+        const scriptExecutor = await this.createTestScriptExecutor( options );
         const path = await scriptExecutor.execute( options );
         return await this.convertReportFile( path );
     }
@@ -113,12 +118,13 @@ export abstract class CodeceptJS implements Plugin {
         if ( this._fs != fs ) {
             return;
         }
-        await fse.mkdirs( dir );
+        // await fse.mkdirs( dir );
+        fse.mkdirsSync( dir );
     }
 
     private async writeFile( path: string, content: string ): Promise< void > {
         const write = promisify( this._fs.writeFile || fs.writeFile );
-        await write( path, content, this._encoding );
+        await write( path, content, { encoding: this._encoding, flag: 'w+' } );
     }
 
     protected createTestScriptGenerator( specificationDir?: string): TestScriptGenerator {
@@ -128,18 +134,32 @@ export abstract class CodeceptJS implements Plugin {
         );
     }
 
-    protected createTestScriptExecutor( options: TestScriptExecutionOptions ): TestScriptExecutor {
+    protected async createTestScriptExecutor( options: TestScriptExecutionOptions ): Promise< TestScriptExecutor > {
 
-        const scriptFileFilter = join( options.sourceCodeDir, '**/*.js' );
+        const readF = promisify( this._fs.readFile );
 
-        const cfgMaker: ConfigMaker = new ConfigMaker();
-        let config = cfgMaker.makeBasicConfig(
-            scriptFileFilter,
-            options.executionResultDir
-        );
-        cfgMaker.setWebDriverIOHelper( config );
-        cfgMaker.setDbHelper( config );
-        cfgMaker.setCmdHelper( config );
+        let config = null;
+        try {
+            // console.log( ' Loading config...', this._descriptorPath );
+            const content: string = await readF( this._descriptorPath, { encoding: 'utf8', flag: 'r' } );
+            config = JSON.parse( content );
+        } catch {
+            console.warn( ' No configuration file found.' );
+        }
+
+        // Assure helpers exist
+
+        // Create a basic configuration
+        if ( ! config ) {
+            const cfgMaker: ConfigMaker = new ConfigMaker();
+
+            const scriptFileFilter = join( options.dirScript, '**/*.js' );
+            config = cfgMaker.makeBasicConfig( scriptFileFilter, options.dirResult );
+
+            cfgMaker.setWebDriverIOHelper( config );
+            cfgMaker.setDbHelper( config );
+            cfgMaker.setCmdHelper( config );
+        }
 
         return new TestScriptExecutor( config );
     }

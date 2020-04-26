@@ -1,11 +1,10 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { AbstractTestScript, ATSCommand } from 'concordialang-plugin';
 import * as logSymbols from 'log-symbols';
 import { render } from "mustache";
-import { CommandMapper } from "./CommandMapper";
 import { relative } from 'path';
+import { CommandMapper } from "./CommandMapper";
 const dedent = require('dedent-js');
-
 
 /**
  * Generate test scripts for CodeceptJS.

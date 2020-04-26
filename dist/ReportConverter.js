@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const concordialang_plugin_1 = require("concordialang-plugin");
 const fs = require("fs");
 const util_1 = require("util");
-const concordialang_plugin_1 = require("concordialang-plugin");
 /**
  * Converts a Mocha Multi Report to Concordia's format.
  *
@@ -72,7 +72,7 @@ class ReportConverter {
     fillStatus(source, result) {
         const stats = source.stats;
         if (!stats) {
-            result.started = 'Unknown';
+            result.started = undefined;
             result.finished = (new Date()).toUTCString();
             // Get the needed details from `tests`
             if (!source.tests) {
@@ -121,7 +121,6 @@ class ReportConverter {
         result.plugin = {
             description: pluginConfig.description,
             name: pluginConfig.name,
-            targets: pluginConfig.targets,
             version: pluginConfig.version
         };
     }

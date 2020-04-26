@@ -16,6 +16,20 @@ npm i --save concordialang-codeceptjs-core
 
 ## Documentation
 
+### Shared dependencies
+
+- `concordialang-plugin`
+- `codeceptjs` v1 *
+- `codeceptjs-cmdhelper` *
+- `codeceptjs-dbhelper` *
+- `database-js` *
+- `database-js-json` *
+- `mocha` v5 *
+- `mocha-multi` v1 *
+- `mochawesome` v3 *
+
+*= not used directly by this package
+
 ### Integration with CodeceptJS
 
 #### Test Events

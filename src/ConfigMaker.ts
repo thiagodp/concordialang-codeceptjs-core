@@ -34,17 +34,29 @@ export class ConfigMaker {
 
                     "json": {
                         "stdout": join( output, outputFile )
-                    }
+                    },
 
-                    // "mochawesome": {
-                    //     "stdout": "-",
-                    //     "options": {
-                    //         "reportDir": output,
-                    //         "reportFilename": "report",
-                    //         "uniqueScreenshotNames": true,
-                    //         "timestamp": true
-                    //     }
-                    // },
+                    "mochawesome": {
+                        "stdout": "-",
+                        "options": {
+                            "reportDir": output,
+                            "reportFilename": "report",
+                            "uniqueScreenshotNames": true,
+                            "timestamp": true
+                        }
+                    },
+                }
+            },
+
+            /**
+             * Não afeta execução normal, mas só se rodar com
+             * `codeceptjs run-parallel parallel`
+             *
+             * @see TestScriptExecutor
+             */
+            "multiple": {
+                "parallel": {
+                    "chunks": 2
                 }
             }
         };
@@ -67,11 +79,7 @@ export class ConfigMaker {
             "browser": browser,
             "url": url,
             "windowSize": "maximize",
-            "smartWait": 5000,
-            "timeouts": {
-                "script": 60000,
-                "page load": 10000
-            }
+            "smartWait": 5000
         };
     }
 
@@ -79,19 +87,19 @@ export class ConfigMaker {
      * Sets a Appium helper.
      *
      * @param config Target configuration.
-     * @param plataform Plataform. Default is "Android".
+     * @param platform Platform. Default is "Android".
      * @param app Application url or path. Default is "http://localhost".
      * @param device Device. Default is "emulator".
      */
     setAppiumHelper(
         config: any,
-        plataform: any = 'Android',
+        platform: any = 'Android',
         app: string = 'http://localhost',
         device: string = 'emulator'
     ) {
         let helpers = this.ensureHelpersProperty( config );
         helpers[ "Appium" ] = {
-            "plataform": plataform,
+            "platform": platform,
             "app": app,
             "device": device
         };

@@ -1,4 +1,4 @@
-import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions } from 'concordialang-plugin';
+import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions, TestScriptGenerationResult } from 'concordialang-plugin';
 import { TestScriptExecutor } from './TestScriptExecutor';
 import { TestScriptGenerator } from './TestScriptGenerator';
 /**
@@ -17,7 +17,7 @@ export declare abstract class CodeceptJS implements Plugin {
      */
     constructor(descriptorPath?: string, fsToUse?: any, _encoding?: string);
     /** @inheritDoc */
-    generateCode(abstractTestScripts: AbstractTestScript[], options: TestScriptGenerationOptions, errors: Error[]): Promise<string[]>;
+    generateCode(abstractTestScripts: AbstractTestScript[], options: TestScriptGenerationOptions): Promise<TestScriptGenerationResult>;
     /** @inheritDoc */
     executeCode(options: TestScriptExecutionOptions): Promise<TestScriptExecutionResult>;
     /** @inheritDoc */
@@ -35,5 +35,5 @@ export declare abstract class CodeceptJS implements Plugin {
     private ensureDir;
     private writeFile;
     protected createTestScriptGenerator(specificationDir?: string): TestScriptGenerator;
-    protected createTestScriptExecutor(options: TestScriptExecutionOptions): TestScriptExecutor;
+    protected createTestScriptExecutor(options: TestScriptExecutionOptions): Promise<TestScriptExecutor>;
 }

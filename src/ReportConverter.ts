@@ -1,7 +1,7 @@
+import { DefaultInstrumentationReader, FileInstrumentationReader, TestMethodResult, TestScriptExecutionResult, TestSuiteResult, TotalExecutionResult } from 'concordialang-plugin';
+import { Location } from 'concordialang-types';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { Location } from 'concordialang-types';
-import { TestMethodResult, TestScriptExecutionResult, TestSuiteResult, TotalExecutionResult, FileInstrumentationReader, DefaultInstrumentationReader } from 'concordialang-plugin';
 
 /**
  * Converts a Mocha Multi Report to Concordia's format.
@@ -70,9 +70,11 @@ export class ReportConverter {
      * @param result Concordia format.
      */
     private fillStatus( source: any, result: TestScriptExecutionResult ): void {
+
         const stats = source.stats;
+
         if ( ! stats ) {
-            result.started = 'Unknown';
+            result.started = undefined;
             result.finished = ( new Date() ).toUTCString();
 
             // Get the needed details from `tests`
@@ -129,7 +131,6 @@ export class ReportConverter {
         result.plugin = {
             description: pluginConfig.description,
             name: pluginConfig.name,
-            targets: pluginConfig.targets,
             version: pluginConfig.version
         };
     }
