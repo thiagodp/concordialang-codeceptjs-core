@@ -14,21 +14,34 @@
 npm i --save concordialang-codeceptjs-core
 ```
 
+## Related
+
+- [concordialang-codeceptjs-webdriverio](https://github.com/thiagodp/concordialang-codeceptjs-webdriverio): plugin for CodeceptJS with WebDriverIO (made with `concordialang-codeceptjs-core`)
+- [concordialang-codeceptjs-appium](https://github.com/thiagodp/concordialang-codeceptjs-appium): plugin for CodeceptJS with Appium (made with `concordialang-codeceptjs-core`)
+- [concordialang-plugin](https://github.com/thiagodp/concordialang-plugin)
+
+
 ## Documentation
 
-### Shared dependencies
+### Compatibility
 
-- `concordialang-plugin`
-- `codeceptjs` v1 *
-- `codeceptjs-cmdhelper` *
-- `codeceptjs-dbhelper` *
-- `database-js` *
-- `database-js-json` *
-- `mocha` v5 *
-- `mocha-multi` v1 *
-- `mochawesome` v3 *
+- Version `1.x` is compatible with **Concordia Compiler `2.x`**
+- Version `0.x` is compatible with **Concordia Compiler `1.x`**
 
-*= not used directly by this package
+#### Shared by version `1.x`
+
+| name                   | version | Used directly |
+| ---------------------- | ------- | ------------- |
+| `concordialang-plugin` | 1.x     | yes   |
+| `codeceptjs`           | 1.x     | _no_  |
+| `codeceptjs-cmdhelper` | latest  | _no_  |
+| `codeceptjs-dbhelper`  | latest  | _no_  |
+| `database-js`          | latest  | _no_  |
+| `database-js-json`     | latest  | _no_  |
+| `mocha`                | 5.x     | _no_  |
+| `mocha-multi`          | 1.x     | _no_  |
+| `mochawesome`          | 3.x     | _no_  |
+
 
 ### Integration with CodeceptJS
 
@@ -181,14 +194,6 @@ The following table lists the support to the [Concordia Language Actions](https:
  | wait + hide + ( uielement OR uiliteral )         | waitToHide ✓                                                                      |
  | -                                                | waitUntil                                                                         |
  | wait + url + value                               | waitUrlEquals ✓                                                                   |
-
-
-## See Also
-
-- [concordialang-codeceptjs-webdriverio](https://github.com/thiagodp/concordialang-codeceptjs-webdriverio): plugin for CodeceptJS with WebDriverIO
-- [concordialang-codeceptjs-appium](https://github.com/thiagodp/concordialang-codeceptjs-appium): plugin for CodeceptJS with Appium
-- [concordialang-plugin](https://github.com/thiagodp/concordialang-plugin): Basic plugin types
-- [Concordia](https://github.com/thiagodp/concordialang)
 
 
 ## License
