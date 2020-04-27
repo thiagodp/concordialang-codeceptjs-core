@@ -10,7 +10,7 @@ describe( 'TestScriptExecutor', () => {
     describe( '#makeCommand', () => {
 
         it( 'runs all the files by default', () => {
-            const cmd = tse.makeCommand( {} );
+            const cmd = tse.makeCmd( {} );
             const expectedBeginning = 'npx codeceptjs run';
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -19,7 +19,7 @@ describe( 'TestScriptExecutor', () => {
         //     const options: TestScriptExecutionOptions = {
         //         parameters: '--grep "Foo"'
         //     };
-        //     const cmd = tse.makeCommand( options );
+        //     const cmd = tse.makeCmd( options );
         //     const expectedBeginning = `npx codeceptjs run ${options.parameters}`;
         //     expect( cmd ).toStartWith( expectedBeginning );
         // } );
@@ -28,7 +28,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 dirScript: 'tests'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run ${options.dirScript}`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -37,7 +37,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 file: '/path/to/foo.js'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run --override "{${s}tests${s}:${s}/path/to/foo.js${s}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -46,7 +46,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 file: '/path/to/foo.js,bar.js,/far/zoo.js'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run --override "{${s}tests${s}:${s}{/path/to/foo.js,bar.js,/far/zoo.js}${s}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -56,7 +56,7 @@ describe( 'TestScriptExecutor', () => {
                 dirScript: 'tests',
                 file: 'foo.js,sub/bar.js,sub/sub2/zoo.js,sub/../zaz.js'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run --override "{${s}tests${s}:${s}{tests/foo.js,tests/sub/bar.js,tests/sub/sub2/zoo.js,tests/zaz.js}${s}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -65,7 +65,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 dirResult: 'dist'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run --override "{${s}output${s}:${s}dist${s}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -76,7 +76,7 @@ describe( 'TestScriptExecutor', () => {
                 dirScript: 'tests',
                 file: 'foo.js,sub/bar.js,sub/sub2/zoo.js,sub/../zaz.js'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run --override "{${s}tests${s}:${s}{tests/foo.js,tests/sub/bar.js,tests/sub/sub2/zoo.js,tests/zaz.js}${s},${s}output${s}:${s}dist${s}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -85,7 +85,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 grep: 'Foo|Bar'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = 'npx codeceptjs run --grep "Foo|Bar"';
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -95,7 +95,7 @@ describe( 'TestScriptExecutor', () => {
                 dirScript: 'tests',
                 grep: 'Foo|Bar'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = 'npx codeceptjs run tests --grep "Foo|Bar"';
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -104,7 +104,7 @@ describe( 'TestScriptExecutor', () => {
             const options: TestScriptExecutionOptions = {
                 instances: 2
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run-multiple parallel --override "{${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -114,7 +114,7 @@ describe( 'TestScriptExecutor', () => {
                 instances: 2,
                 file: 'tests/foo.js,tests/sub/bar.js'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run-multiple parallel --override "{${s}tests${s}:${s}{tests/foo.js,tests/sub/bar.js}${s},${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -125,7 +125,7 @@ describe( 'TestScriptExecutor', () => {
                 file: 'tests/foo.js,tests/sub/bar.js',
                 target: 'chrome,firefox'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run-multiple parallel --override "{${s}tests${s}:${s}{tests/foo.js,tests/sub/bar.js}${s},${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2,${s}browsers${s}:[${s}chrome${s},${s}firefox${s}]}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -137,7 +137,7 @@ describe( 'TestScriptExecutor', () => {
                 file: 'foo.js,sub/bar.js',
                 target: 'chrome,firefox'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run-multiple parallel --override "{${s}tests${s}:${s}{tests/foo.js,tests/sub/bar.js}${s},${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2,${s}browsers${s}:[${s}chrome${s},${s}firefox${s}]}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
@@ -148,7 +148,7 @@ describe( 'TestScriptExecutor', () => {
                 dirScript: 'tests',
                 target: 'chrome,firefox'
             };
-            const cmd = tse.makeCommand( options );
+            const cmd = tse.makeCmd( options );
             const expectedBeginning = `npx codeceptjs run-multiple parallel tests --override "{${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2,${s}browsers${s}:[${s}chrome${s},${s}firefox${s}]}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );

@@ -42,7 +42,7 @@ export class ConfigMaker {
                             "reportDir": output,
                             "reportFilename": "report",
                             "uniqueScreenshotNames": true,
-                            "timestamp": true
+                            "timestamp": false
                         }
                     },
                 }

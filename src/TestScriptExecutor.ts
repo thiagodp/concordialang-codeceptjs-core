@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 import * as childProcess from 'child_process';
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
 import { arrowRight, cross, info, warning } from 'figures';
-import { access, constants, readFile, writeFile } from 'fs';
+import { access, constants, readFile, writeFile, unlink } from 'fs';
 import * as fse from 'node-fs-extra';
 import { isAbsolute, join } from 'path';
 import { promisify } from 'util';
@@ -66,16 +66,58 @@ export class TestScriptExecutor {
 
         // codecept.json -------------------------------------------------------
 
-        await this.assureConfigurationFile( executionPath );
+        const codeceptJSConfigFile = join( executionPath, 'codecept.json' );
 
-        // Run CodeceptJS -------------------------------------------------------
+        const isConfigFileAssured = await this.assureConfigurationFile( codeceptJSConfigFile );
 
-        const cmd = this.makeCommand( options );
+        // Run CodeceptJS ------------------------------------------------------
+
+        const [ cmd, needsToCreateBackup, tempConfig ] = this.makeCommand( options );
+
+        // Preparing backup file if needed
+        //
+        //      CodeceptJS' parameter --override has a bug in which it does not
+        //      accept a JSON content with one or more spaces. As a workaround,
+        //      we are creating a backup copy of the original configuration file
+        //      and restoring it after executing the test scripts.
+        //
+
+        const backupFile = 'codecept-backup-' + Date.now() + '.json';
+        let backupFileCreated: boolean = false;
+
+        if ( isConfigFileAssured && needsToCreateBackup ) {
+            try {
+                // Create a backup copy
+                await this.copyFile( codeceptJSConfigFile, backupFile );
+                // Overwrite current configuration file
+                await this.writeObjectToFile( codeceptJSConfigFile, tempConfig );
+                // Indicate success
+                backupFileCreated = true;
+            } catch ( e ) {
+                writeln( iconError, textColor( 'Error copying the configuration file' ), highlight( codeceptJSConfigFile ) );
+            }
+        }
+
+        // Running the test scripts
+
         showInfo( 'Running test scripts...' );
         writeln( ' ', textCommand( cmd ) );
         const code: number = await this.runCommand( cmd );
 
-        // Output file ----------------------------------------------------------
+        // Restoring the backup if needed
+
+        if ( backupFileCreated ) {
+            try {
+                // Copy the backup file back
+                await this.copyFile( backupFile, codeceptJSConfigFile );
+                // Delete the backup file
+                await this.deleteFile( backupFile );
+            } catch ( e ) {
+                writeln( iconError, textColor( 'Error restoring the backup file' ), highlight( backupFile ) );
+            }
+        }
+
+        // Output file ---------------------------------------------------------
 
         const OUTPUT_FILE_NAME = 'output.json';
         const outputFilePath = join( options.dirResult || '.', OUTPUT_FILE_NAME );
@@ -84,9 +126,15 @@ export class TestScriptExecutor {
         return outputFilePath;
     }
 
+    public makeCmd( options: TestScriptExecutionOptions ): string {
+        const [ cmd ] = this.makeCommand( options );
+        return cmd;
+    }
 
-    public makeCommand( options: TestScriptExecutionOptions ): string {
+    public makeCommand( options: TestScriptExecutionOptions ): [ string, boolean, object ] {
 
+        let backupFile: boolean = false;
+        let obj = undefined;
         let cmd = 'npx codeceptjs';
 
         const inParallel = options.instances && options.instances > 1;
@@ -270,7 +318,20 @@ export class TestScriptExecutor {
                 const overrideStr = JSON.stringify( overrideObj, undefined, '' )
                     .replace( /"/g, '\\\\\\\"' );
 
-                cmd += ` --override "${overrideStr}"`;
+                //
+                // CodeceptJS has a bug in which it does not accept a JSON
+                // with one or more spaces. Thus, as a workaround, we can
+                // create a copy the original configuration file, overwrite the
+                // original with the desired configuration, then restore it.
+                //
+
+                if ( overrideStr.indexOf( ' ' ) < 0 ) {
+                    cmd += ` --override "${overrideStr}"`;
+                } else {
+                    backupFile = true;
+                    obj = overrideObj;
+                }
+
             }
         }
 
@@ -290,34 +351,24 @@ export class TestScriptExecutor {
 
         cmd += inParallel ? ' || echo .' : ' --colors || echo .';
 
-        return cmd;
+        return [ cmd, backupFile, obj ];
     }
 
 
-    private async fileExists( path: string ): Promise< boolean > {
-        try {
-            const accessFile = promisify( access );
-            await accessFile( path, constants.F_OK );
-            return true;
-        } catch ( e ) {
-            return false;
-        }
-    }
 
+    public async assureConfigurationFile( codeceptJSConfigFile: string ): Promise< boolean > {
 
-    public async assureConfigurationFile( executionPath: string ): Promise< boolean > {
+        // const writeF = promisify( writeFile );
 
-        const writeF = promisify( writeFile );
-
-        const codeceptJSConfigFile = join( executionPath, 'codecept.json' );
         const configFileExists: boolean = await this.fileExists( codeceptJSConfigFile );
 
         // It's only possible to run CodeceptJS if there is a config file
         if ( ! configFileExists ) {
 
             try {
-                const json = JSON.stringify( this._defaultFrameworkConfig, undefined, "\t" );
-                await writeF( codeceptJSConfigFile, json );
+                // const json = JSON.stringify( this._defaultFrameworkConfig, undefined, "\t" );
+                // await writeF( codeceptJSConfigFile, json );
+                await this.writeObjectToFile( codeceptJSConfigFile, this._defaultFrameworkConfig );
             } catch ( e ) {
                 writeln( iconError, textColor( 'Could not generate' ), highlight( codeceptJSConfigFile ) + '.', textColor( 'Please run the following command:' ) );
                 writeln( textColor( '  codeceptjs init' ) );
@@ -359,7 +410,8 @@ export class TestScriptExecutor {
 
             if ( needsToWriteConfig ) {
                 try {
-                    await writeF( codeceptJSConfigFile, JSON.stringify( config ) );
+                    // await writeF( codeceptJSConfigFile, JSON.stringify( config ) );
+                    await this.writeObjectToFile( codeceptJSConfigFile, config );
                     showInfo( 'Updated configuration file', codeceptJSConfigFile );
                 } catch ( e ) {
                     writeln( iconError, textColor( 'Error updating configuration file' ), highlight( codeceptJSConfigFile ) + '. Please check if it has DbHelper and CmdHelper configured.' );
@@ -370,6 +422,35 @@ export class TestScriptExecutor {
 
         return true;
     }
+
+    private async fileExists( path: string ): Promise< boolean > {
+        try {
+            const accessFile = promisify( access );
+            await accessFile( path, constants.F_OK );
+            return true;
+        } catch ( e ) {
+            return false;
+        }
+    }
+
+    private async writeObjectToFile( path: string, obj: object ): Promise< void > {
+        const writeF = promisify( writeFile );
+        const json = JSON.stringify( obj, undefined, "\t" );
+        await writeF( path, json );
+    }
+
+    private async copyFile( from: string, to: string ): Promise< void > {
+        const readF = promisify( readFile );
+        const writeF = promisify( writeFile );
+        const content = await readF( from, { encoding:'utf8' } );
+        await writeF( to, content, { encoding:'utf8', flag: 'w+' } );
+    }
+
+    private async deleteFile( path: string ): Promise< void > {
+        const unlinkF = promisify( unlink );
+        await unlinkF( path );
+    }
+
 
     // private escapeJson( json: string ): string {
     //     return JSON.stringify( { _: json} ).slice( 6, -2 );

@@ -11,8 +11,12 @@ export declare class TestScriptExecutor {
      * @param options Execution options
      */
     execute(options: TestScriptExecutionOptions): Promise<string>;
-    makeCommand(options: TestScriptExecutionOptions): string;
+    makeCmd(options: TestScriptExecutionOptions): string;
+    makeCommand(options: TestScriptExecutionOptions): [string, boolean, object];
+    assureConfigurationFile(codeceptJSConfigFile: string): Promise<boolean>;
     private fileExists;
-    assureConfigurationFile(executionPath: string): Promise<boolean>;
+    private writeObjectToFile;
+    private copyFile;
+    private deleteFile;
     private runCommand;
 }

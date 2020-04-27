@@ -62,20 +62,62 @@ class TestScriptExecutor {
             }
             const executionPath = process.cwd();
             // codecept.json -------------------------------------------------------
-            yield this.assureConfigurationFile(executionPath);
-            // Run CodeceptJS -------------------------------------------------------
-            const cmd = this.makeCommand(options);
+            const codeceptJSConfigFile = path_1.join(executionPath, 'codecept.json');
+            const isConfigFileAssured = yield this.assureConfigurationFile(codeceptJSConfigFile);
+            // Run CodeceptJS ------------------------------------------------------
+            const [cmd, needsToCreateBackup, tempConfig] = this.makeCommand(options);
+            // Preparing backup file if needed
+            //
+            //      CodeceptJS' parameter --override has a bug in which it does not
+            //      accept a JSON content with one or more spaces. As a workaround,
+            //      we are creating a backup copy of the original configuration file
+            //      and restoring it after executing the test scripts.
+            //
+            const backupFile = 'codecept-backup-' + Date.now() + '.json';
+            let backupFileCreated = false;
+            if (isConfigFileAssured && needsToCreateBackup) {
+                try {
+                    // Create a backup copy
+                    yield this.copyFile(codeceptJSConfigFile, backupFile);
+                    // Overwrite current configuration file
+                    yield this.writeObjectToFile(codeceptJSConfigFile, tempConfig);
+                    // Indicate success
+                    backupFileCreated = true;
+                }
+                catch (e) {
+                    writeln(iconError, textColor('Error copying the configuration file'), highlight(codeceptJSConfigFile));
+                }
+            }
+            // Running the test scripts
             showInfo('Running test scripts...');
             writeln(' ', textCommand(cmd));
             const code = yield this.runCommand(cmd);
-            // Output file ----------------------------------------------------------
+            // Restoring the backup if needed
+            if (backupFileCreated) {
+                try {
+                    // Copy the backup file back
+                    yield this.copyFile(backupFile, codeceptJSConfigFile);
+                    // Delete the backup file
+                    yield this.deleteFile(backupFile);
+                }
+                catch (e) {
+                    writeln(iconError, textColor('Error restoring the backup file'), highlight(backupFile));
+                }
+            }
+            // Output file ---------------------------------------------------------
             const OUTPUT_FILE_NAME = 'output.json';
             const outputFilePath = path_1.join(options.dirResult || '.', OUTPUT_FILE_NAME);
             showInfo('Retrieving results from', outputFilePath, '...');
             return outputFilePath;
         });
     }
+    makeCmd(options) {
+        const [cmd] = this.makeCommand(options);
+        return cmd;
+    }
     makeCommand(options) {
+        let backupFile = false;
+        let obj = undefined;
         let cmd = 'npx codeceptjs';
         const inParallel = options.instances && options.instances > 1;
         if (inParallel) {
@@ -222,7 +264,19 @@ class TestScriptExecutor {
             if (!isEmptyObject) {
                 const overrideStr = JSON.stringify(overrideObj, undefined, '')
                     .replace(/"/g, '\\\\\\\"');
-                cmd += ` --override "${overrideStr}"`;
+                //
+                // CodeceptJS has a bug in which it does not accept a JSON
+                // with one or more spaces. Thus, as a workaround, we can
+                // create a copy the original configuration file, overwrite the
+                // original with the desired configuration, then restore it.
+                //
+                if (overrideStr.indexOf(' ') < 0) {
+                    cmd += ` --override "${overrideStr}"`;
+                }
+                else {
+                    backupFile = true;
+                    obj = overrideObj;
+                }
             }
         }
         cmd += ' --steps';
@@ -237,30 +291,18 @@ class TestScriptExecutor {
             cmd += ` --reporter mochawesome --reporter-options reportDir=${outputDir},reportFilename=output.json`;
         }
         cmd += inParallel ? ' || echo .' : ' --colors || echo .';
-        return cmd;
+        return [cmd, backupFile, obj];
     }
-    fileExists(path) {
+    assureConfigurationFile(codeceptJSConfigFile) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const accessFile = util_1.promisify(fs_1.access);
-                yield accessFile(path, fs_1.constants.F_OK);
-                return true;
-            }
-            catch (e) {
-                return false;
-            }
-        });
-    }
-    assureConfigurationFile(executionPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const writeF = util_1.promisify(fs_1.writeFile);
-            const codeceptJSConfigFile = path_1.join(executionPath, 'codecept.json');
+            // const writeF = promisify( writeFile );
             const configFileExists = yield this.fileExists(codeceptJSConfigFile);
             // It's only possible to run CodeceptJS if there is a config file
             if (!configFileExists) {
                 try {
-                    const json = JSON.stringify(this._defaultFrameworkConfig, undefined, "\t");
-                    yield writeF(codeceptJSConfigFile, json);
+                    // const json = JSON.stringify( this._defaultFrameworkConfig, undefined, "\t" );
+                    // await writeF( codeceptJSConfigFile, json );
+                    yield this.writeObjectToFile(codeceptJSConfigFile, this._defaultFrameworkConfig);
                 }
                 catch (e) {
                     writeln(iconError, textColor('Could not generate'), highlight(codeceptJSConfigFile) + '.', textColor('Please run the following command:'));
@@ -296,7 +338,8 @@ class TestScriptExecutor {
                 }
                 if (needsToWriteConfig) {
                     try {
-                        yield writeF(codeceptJSConfigFile, JSON.stringify(config));
+                        // await writeF( codeceptJSConfigFile, JSON.stringify( config ) );
+                        yield this.writeObjectToFile(codeceptJSConfigFile, config);
                         showInfo('Updated configuration file', codeceptJSConfigFile);
                     }
                     catch (e) {
@@ -306,6 +349,39 @@ class TestScriptExecutor {
                 }
             }
             return true;
+        });
+    }
+    fileExists(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const accessFile = util_1.promisify(fs_1.access);
+                yield accessFile(path, fs_1.constants.F_OK);
+                return true;
+            }
+            catch (e) {
+                return false;
+            }
+        });
+    }
+    writeObjectToFile(path, obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const writeF = util_1.promisify(fs_1.writeFile);
+            const json = JSON.stringify(obj, undefined, "\t");
+            yield writeF(path, json);
+        });
+    }
+    copyFile(from, to) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const readF = util_1.promisify(fs_1.readFile);
+            const writeF = util_1.promisify(fs_1.writeFile);
+            const content = yield readF(from, { encoding: 'utf8' });
+            yield writeF(to, content, { encoding: 'utf8', flag: 'w+' });
+        });
+    }
+    deleteFile(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const unlinkF = util_1.promisify(fs_1.unlink);
+            yield unlinkF(path);
         });
     }
     // private escapeJson( json: string ): string {
