@@ -1,22 +1,24 @@
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
+import { HelperConfiguration } from './HelperConfiguration';
 /**
  * Executes test scripts using CodeceptJS.
  */
 export declare class TestScriptExecutor {
-    private readonly _defaultFrameworkConfig;
-    constructor(_defaultFrameworkConfig: object);
+    private readonly _additionalHelpers;
+    constructor(_additionalHelpers?: Array<HelperConfiguration>);
     /**
      * Executes the script according to the options given.
      *
      * @param options Execution options
      */
     execute(options: TestScriptExecutionOptions): Promise<string>;
-    makeCmd(options: TestScriptExecutionOptions): string;
-    makeCommand(options: TestScriptExecutionOptions): [string, boolean, object];
-    assureConfigurationFile(codeceptJSConfigFile: string): Promise<boolean>;
-    private fileExists;
-    private writeObjectToFile;
-    private copyFile;
-    private deleteFile;
-    private runCommand;
+    protected createBasicConfiguration(options: TestScriptExecutionOptions): any;
+    protected updateConfiguration(config: any, options: TestScriptExecutionOptions): boolean;
+    protected writeConfigurationFile(codeceptJSConfigFile: string, config: any, isUpdate: boolean): Promise<boolean>;
+    protected readConfigurationFile(codeceptJSConfigFile: string): Promise<any>;
+    protected fileExists(path: string): Promise<boolean>;
+    protected writeObjectToFile(path: string, obj: object): Promise<void>;
+    protected copyFile(from: string, to: string): Promise<void>;
+    protected deleteFile(path: string): Promise<void>;
+    protected runCommand(command: string): Promise<number>;
 }

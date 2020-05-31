@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ConfigMaker = void 0;
 const path_1 = require("path");
+const toUnixPath = (path) => {
+    return path.replace(/\\/g, '/');
+};
 /**
  * Configuration maker
  */
@@ -13,9 +17,11 @@ class ConfigMaker {
      * @param outputFile Output report file. Default is 'output.json'.
      */
     makeBasicConfig(filter = 'test/**/*.js', output = './output', outputFile = 'output.json') {
+        const testsFilter = toUnixPath(path_1.relative(process.cwd(), filter));
+        const outputDir = toUnixPath(path_1.relative(process.cwd(), output));
         return {
-            "tests": filter,
-            "output": output,
+            "tests": testsFilter,
+            "output": outputDir,
             "helpers": {},
             "bootstrap": false,
             "mocha": {
@@ -27,12 +33,12 @@ class ConfigMaker {
                         }
                     },
                     "json": {
-                        "stdout": path_1.join(output, outputFile)
+                        "stdout": path_1.join(outputDir, outputFile)
                     },
                     "mochawesome": {
                         "stdout": "-",
                         "options": {
-                            "reportDir": output,
+                            "reportDir": outputDir,
                             "reportFilename": "report",
                             "uniqueScreenshotNames": true,
                             "timestamp": false
@@ -53,91 +59,15 @@ class ConfigMaker {
             }
         };
     }
-    /**
-     * Sets a WebDriverIO helper.
-     *
-     * @param config Target configuration.
-     * @param browser Target browser or browsers. Default is "chrome".
-     * @param url Application url. Default is "http://localhost".
-     */
-    setWebDriverIOHelper(config, browser = 'chrome', url = 'http://localhost') {
-        let helpers = this.ensureHelpersProperty(config);
-        helpers["WebDriverIO"] = {
-            "browser": browser,
-            "url": url,
-            "windowSize": "maximize",
-            "smartWait": 5000
-        };
+    hasHelper(config, hc) {
+        const helpers = this.ensureHelpersProperty(config);
+        const name = hc.name();
+        return !!helpers[name];
     }
-    /**
-     * Sets a Appium helper.
-     *
-     * @param config Target configuration.
-     * @param platform Platform. Default is "Android".
-     * @param app Application url or path. Default is "http://localhost".
-     * @param device Device. Default is "emulator".
-     */
-    setAppiumHelper(config, platform = 'Android', app = 'http://localhost', device = 'emulator') {
-        let helpers = this.ensureHelpersProperty(config);
-        helpers["Appium"] = {
-            "platform": platform,
-            "app": app,
-            "device": device
-        };
-    }
-    /**
-     * Sets a DBHelper
-     *
-     * @param config Target configuration.
-     * @param requireFile Required file or library. Defaults to "./node_modules/codeceptjs-dbhelper".
-     */
-    setDbHelper(config, requireFile = './node_modules/codeceptjs-dbhelper') {
-        let helpers = this.ensureHelpersProperty(config);
-        const property = this.getDbHelperProperty();
-        helpers[property] = {
-            "require": requireFile
-        };
-    }
-    /** Returns the property for DbHelper */
-    getDbHelperProperty() {
-        return 'DbHelper';
-    }
-    /**
-     * Returns true whether the given configuration has DbHelper.
-     *
-     * @param config Target configuration
-     */
-    hasDbHelper(config) {
-        let helpers = this.ensureHelpersProperty(config);
-        const property = this.getDbHelperProperty();
-        return !helpers[property] ? false : true;
-    }
-    /**
-     * Sets a CmdHelper
-     *
-     * @param config Target configuration.
-     * @param requireFile Required file or library. Defaults to "./node_modules/codeceptjs-cmdhelper".
-     */
-    setCmdHelper(config, requireFile = './node_modules/codeceptjs-cmdhelper') {
-        let helpers = this.ensureHelpersProperty(config);
-        const property = this.getCmdHelperProperty();
-        helpers[property] = {
-            "require": requireFile
-        };
-    }
-    /** Returns the property for CmdHelper */
-    getCmdHelperProperty() {
-        return 'CmdHelper';
-    }
-    /**
-     * Returns true whether the given configuration has CmdHelper.
-     *
-     * @param config Target configuration
-     */
-    hasCmdHelper(config) {
-        let helpers = this.ensureHelpersProperty(config);
-        const property = this.getCmdHelperProperty();
-        return !helpers[property] ? false : true;
+    setHelper(config, hc, execOptions) {
+        const helpers = this.ensureHelpersProperty(config);
+        const name = hc.name();
+        helpers[name] = hc.generate(execOptions);
     }
     /**
      * Ensure that the given configurations have a helpers property.

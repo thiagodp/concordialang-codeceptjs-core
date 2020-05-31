@@ -35,5 +35,5 @@ export declare abstract class CodeceptJS implements Plugin {
     private ensureDir;
     private writeFile;
     protected createTestScriptGenerator(specificationDir?: string): TestScriptGenerator;
-    protected createTestScriptExecutor(options: TestScriptExecutionOptions): Promise<TestScriptExecutor>;
+    protected createTestScriptExecutor(options: TestScriptExecutionOptions): TestScriptExecutor;
 }

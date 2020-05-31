@@ -1,3 +1,5 @@
+import { HelperConfiguration } from './HelperConfiguration';
+import { TestScriptExecutionOptions } from 'concordialang-plugin/dist';
 /**
  * Configuration maker
  */
@@ -48,53 +50,8 @@ export declare class ConfigMaker {
             };
         };
     };
-    /**
-     * Sets a WebDriverIO helper.
-     *
-     * @param config Target configuration.
-     * @param browser Target browser or browsers. Default is "chrome".
-     * @param url Application url. Default is "http://localhost".
-     */
-    setWebDriverIOHelper(config: any, browser?: any, url?: string): void;
-    /**
-     * Sets a Appium helper.
-     *
-     * @param config Target configuration.
-     * @param platform Platform. Default is "Android".
-     * @param app Application url or path. Default is "http://localhost".
-     * @param device Device. Default is "emulator".
-     */
-    setAppiumHelper(config: any, platform?: any, app?: string, device?: string): void;
-    /**
-     * Sets a DBHelper
-     *
-     * @param config Target configuration.
-     * @param requireFile Required file or library. Defaults to "./node_modules/codeceptjs-dbhelper".
-     */
-    setDbHelper(config: any, requireFile?: string): void;
-    /** Returns the property for DbHelper */
-    getDbHelperProperty(): string;
-    /**
-     * Returns true whether the given configuration has DbHelper.
-     *
-     * @param config Target configuration
-     */
-    hasDbHelper(config: any): boolean;
-    /**
-     * Sets a CmdHelper
-     *
-     * @param config Target configuration.
-     * @param requireFile Required file or library. Defaults to "./node_modules/codeceptjs-cmdhelper".
-     */
-    setCmdHelper(config: any, requireFile?: string): void;
-    /** Returns the property for CmdHelper */
-    getCmdHelperProperty(): string;
-    /**
-     * Returns true whether the given configuration has CmdHelper.
-     *
-     * @param config Target configuration
-     */
-    hasCmdHelper(config: any): boolean;
+    hasHelper(config: any, hc: HelperConfiguration): boolean;
+    setHelper(config: any, hc: HelperConfiguration, execOptions: TestScriptExecutionOptions): void;
     /**
      * Ensure that the given configurations have a helpers property.
      *
@@ -102,7 +59,7 @@ export declare class ConfigMaker {
      *
      * @returns A reference to the helpers property.
      */
-    ensureHelpersProperty(config: any): any;
+    protected ensureHelpersProperty(config: any): any;
     /**
      * Returns true whether the given configuration has a helpers property.
      *

@@ -5,7 +5,6 @@ import { basename, dirname, join, relative, resolve } from 'path';
 import { promisify } from 'util';
 import { CommandMapper } from './CommandMapper';
 import { CODECEPTJS_COMMANDS } from './Commands';
-import { ConfigMaker } from './ConfigMaker';
 import { ReportConverter } from './ReportConverter';
 import { TestScriptExecutor } from './TestScriptExecutor';
 import { TestScriptGenerator } from './TestScriptGenerator';
@@ -72,7 +71,7 @@ export abstract class CodeceptJS implements Plugin {
 
     /** @inheritDoc */
     public async executeCode( options: TestScriptExecutionOptions ): Promise< TestScriptExecutionResult > {
-        const scriptExecutor = await this.createTestScriptExecutor( options );
+        const scriptExecutor = this.createTestScriptExecutor( options );
         const path = await scriptExecutor.execute( options );
         return await this.convertReportFile( path );
     }
@@ -134,34 +133,8 @@ export abstract class CodeceptJS implements Plugin {
         );
     }
 
-    protected async createTestScriptExecutor( options: TestScriptExecutionOptions ): Promise< TestScriptExecutor > {
-
-        const readF = promisify( this._fs.readFile );
-
-        let config = null;
-        try {
-            // console.log( ' Loading config...', this._descriptorPath );
-            const content: string = await readF( this._descriptorPath, { encoding: 'utf8', flag: 'r' } );
-            config = JSON.parse( content );
-        } catch {
-            console.warn( ' No configuration file found.' );
-        }
-
-        // Assure helpers exist
-
-        // Create a basic configuration
-        if ( ! config ) {
-            const cfgMaker: ConfigMaker = new ConfigMaker();
-
-            const scriptFileFilter = join( options.dirScript, '**/*.js' );
-            config = cfgMaker.makeBasicConfig( scriptFileFilter, options.dirResult );
-
-            cfgMaker.setWebDriverIOHelper( config );
-            cfgMaker.setDbHelper( config );
-            cfgMaker.setCmdHelper( config );
-        }
-
-        return new TestScriptExecutor( config );
+    protected createTestScriptExecutor( options: TestScriptExecutionOptions ): TestScriptExecutor {
+        return new TestScriptExecutor();
     }
 
 }

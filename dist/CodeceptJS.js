@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CodeceptJS = void 0;
 const fs = require("fs");
 const fse = require("node-fs-extra");
 const path_1 = require("path");
 const util_1 = require("util");
 const CommandMapper_1 = require("./CommandMapper");
 const Commands_1 = require("./Commands");
-const ConfigMaker_1 = require("./ConfigMaker");
 const ReportConverter_1 = require("./ReportConverter");
 const TestScriptExecutor_1 = require("./TestScriptExecutor");
 const TestScriptGenerator_1 = require("./TestScriptGenerator");
@@ -63,7 +63,7 @@ class CodeceptJS {
     /** @inheritDoc */
     executeCode(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const scriptExecutor = yield this.createTestScriptExecutor(options);
+            const scriptExecutor = this.createTestScriptExecutor(options);
             const path = yield scriptExecutor.execute(options);
             return yield this.convertReportFile(path);
         });
@@ -117,29 +117,7 @@ class CodeceptJS {
         return new TestScriptGenerator_1.TestScriptGenerator(new CommandMapper_1.CommandMapper(Commands_1.CODECEPTJS_COMMANDS), specificationDir);
     }
     createTestScriptExecutor(options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const readF = util_1.promisify(this._fs.readFile);
-            let config = null;
-            try {
-                // console.log( ' Loading config...', this._descriptorPath );
-                const content = yield readF(this._descriptorPath, { encoding: 'utf8', flag: 'r' });
-                config = JSON.parse(content);
-            }
-            catch (_a) {
-                console.warn(' No configuration file found.');
-            }
-            // Assure helpers exist
-            // Create a basic configuration
-            if (!config) {
-                const cfgMaker = new ConfigMaker_1.ConfigMaker();
-                const scriptFileFilter = path_1.join(options.dirScript, '**/*.js');
-                config = cfgMaker.makeBasicConfig(scriptFileFilter, options.dirResult);
-                cfgMaker.setWebDriverIOHelper(config);
-                cfgMaker.setDbHelper(config);
-                cfgMaker.setCmdHelper(config);
-            }
-            return new TestScriptExecutor_1.TestScriptExecutor(config);
-        });
+        return new TestScriptExecutor_1.TestScriptExecutor();
     }
 }
 exports.CodeceptJS = CodeceptJS;

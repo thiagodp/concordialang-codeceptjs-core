@@ -11,36 +11,47 @@
 ## Installation
 
 ```bash
-npm i --save concordialang-codeceptjs-core
+npm i concordialang-codeceptjs-core
 ```
-
-## Related
-
-- [concordialang-codeceptjs-webdriverio](https://github.com/thiagodp/concordialang-codeceptjs-webdriverio): plugin for CodeceptJS with WebDriverIO (made with `concordialang-codeceptjs-core`)
-- [concordialang-codeceptjs-appium](https://github.com/thiagodp/concordialang-codeceptjs-appium): plugin for CodeceptJS with Appium (made with `concordialang-codeceptjs-core`)
-- [concordialang-plugin](https://github.com/thiagodp/concordialang-plugin)
-
-
-## Documentation
 
 ### Compatibility
 
-- Version `1.x` is compatible with **Concordia Compiler `2.x`**
-- Version `0.x` is compatible with **Concordia Compiler `1.x`**
+- Version `1.x` is compatible with **[Concordia](https://concordialang.org) `2.x`**
+- Version `0.x` is compatible with **[Concordia](https://concordialang.org) `1.x`**
 
-#### Shared by version `1.x`
+## Related
 
-| name                   | version | Used directly |
+- [concordialang-codeceptjs-playwright](https://github.com/thiagodp/concordialang-codeceptjs-playwright)
+- [concordialang-codeceptjs-webdriverio](https://github.com/thiagodp/concordialang-codeceptjs-webdriverio)
+- [concordialang-codeceptjs-appium](https://github.com/thiagodp/concordialang-codeceptjs-appium)
+
+## Documentation
+
+#### Shared from version `1.1` on
+
+| Name                   | Version | Used directly |
 | ---------------------- | ------- | ------------- |
-| `concordialang-plugin` | 1.x     | yes   |
-| `codeceptjs`           | 1.x     | _no_  |
-| `codeceptjs-cmdhelper` | latest  | _no_  |
-| `codeceptjs-dbhelper`  | latest  | _no_  |
-| `database-js`          | latest  | _no_  |
-| `database-js-json`     | latest  | _no_  |
-| `mocha`                | 5.x     | _no_  |
-| `mocha-multi`          | 1.x     | _no_  |
-| `mochawesome`          | 3.x     | _no_  |
+| `concordialang-plugin` | latest  | yes           |
+| `codeceptjs-cmdhelper` | latest  | _no_          |
+| `codeceptjs-dbhelper`  | latest  | _no_          |
+
+Notes:
+- Other packages must be shared by the plug-ins.
+- `codeceptjs-dbhelper` installs `database-js`.
+
+#### Shared by version `1.0`
+
+| Name                   | Version | Used directly |
+| ---------------------- | ------- | ------------- |
+| `concordialang-plugin` | 1.x     | yes           |
+| `codeceptjs`           | 1.x     | _no_          |
+| `codeceptjs-cmdhelper` | latest  | _no_          |
+| `codeceptjs-dbhelper`  | latest  | _no_          |
+| `database-js`          | latest  | _no_          |
+| `database-js-json`     | latest  | _no_          |
+| `mocha`                | 5.x     | _no_          |
+| `mocha-multi`          | 1.x     | _no_          |
+| `mochawesome`          | 3.x     | _no_          |
 
 
 ### Integration with CodeceptJS

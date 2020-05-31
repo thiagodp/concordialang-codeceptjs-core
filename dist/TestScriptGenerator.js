@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestScriptGenerator = void 0;
 const chalk = require("chalk");
 const logSymbols = require("log-symbols");
 const mustache_1 = require("mustache");
