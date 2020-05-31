@@ -72,12 +72,11 @@
     "devDependencies": {
         "@types/jest": "^25.2.3",
         "@types/node": "^8.10.61",
-        "depcheck": "^0.9.2",
-        "jest": "^26.0.1",
+        "jest": "^25.5.4",
         "jest-extended": "^0.11.5",
         "memfs": "^2.17.1",
         "rimraf": "^3.0.2",
-        "ts-jest": "^26.1.0",
+        "ts-jest": "^25.5.1",
         "typescript": "^3.9.3"
     }
 }
