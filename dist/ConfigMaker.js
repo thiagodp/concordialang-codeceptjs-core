@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfigMaker = void 0;
 const path_1 = require("path");
 const toUnixPath = (path) => {
     return path.replace(/\\/g, '/');

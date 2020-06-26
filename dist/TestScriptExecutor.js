@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TestScriptExecutor = void 0;
 const chalk = require("chalk");
 const childProcess = require("child_process");
 const figures_1 = require("figures");

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CliCommandMaker = void 0;
 const path_1 = require("path");
 class CliCommandMaker {
     constructor(_defaultFrameworkConfig) {
@@ -62,7 +61,7 @@ class CliCommandMaker {
             !!options.headless) {
             // const overridePieces: string[] = [];
             // let overrideObj = {};
-            let overrideObj = Object.assign(this._defaultFrameworkConfig || {}, {});
+            let overrideObj = Object.assign({}, this._defaultFrameworkConfig);
             // console.log( 'BEFORE', overrideObj );
             if (!!options.file) {
                 if (!options.dirScript) {
@@ -166,24 +165,21 @@ class CliCommandMaker {
             // console.log( 'AFTER', overrideObj );
             // cmd += ' --override "{' + overridePieces.join( ',' ) + '}"';
             const jsonOverrideObj = JSON.stringify(overrideObj, undefined, '');
-            const isEmptyObject = '{}' === jsonOverrideObj;
-            if (!isEmptyObject) {
-                const jsonConfig = JSON.stringify(this._defaultFrameworkConfig, undefined, '');
-                if (jsonOverrideObj !== jsonConfig) {
-                    const overrideStr = jsonOverrideObj.replace(/"/g, '\\\\\\\"');
-                    //
-                    // CodeceptJS has a bug in which it does not accept a JSON
-                    // with one or more spaces. Thus, as a workaround, we can
-                    // create a copy the original configuration file, overwrite the
-                    // original with the desired configuration, then restore it.
-                    //
-                    if (overrideStr.indexOf(' ') < 0) {
-                        cmd += ` --override "${overrideStr}"`;
-                    }
-                    else {
-                        backupFile = true;
-                        obj = overrideObj;
-                    }
+            const jsonConfig = JSON.stringify(this._defaultFrameworkConfig, undefined, '');
+            if (jsonOverrideObj !== jsonConfig) {
+                const overrideStr = jsonOverrideObj.replace(/"/g, '\\\\\\\"');
+                //
+                // CodeceptJS has a bug in which it does not accept a JSON
+                // with one or more spaces. Thus, as a workaround, we can
+                // create a copy the original configuration file, overwrite the
+                // original with the desired configuration, then restore it.
+                //
+                if (overrideStr.indexOf(' ') < 0) {
+                    cmd += ` --override "${overrideStr}"`;
+                }
+                else {
+                    backupFile = true;
+                    obj = overrideObj;
                 }
             }
         }
