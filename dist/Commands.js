@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CODECEPTJS_COMMANDS = void 0;
 const CommandMapper_1 = require("./CommandMapper");
 /** Maps available commands. ORDER MATTERS */
 exports.CODECEPTJS_COMMANDS = [

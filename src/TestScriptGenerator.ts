@@ -84,10 +84,11 @@ export class TestScriptGenerator {
             }
         }
 
+		// Events supported by CodeceptJS (beforeAll and afterAll are not supported)
         const events = [ 'beforeFeature', 'afterFeature', 'beforeEachScenario', 'afterEachScenario' ];
         for ( let eventStr of events ) {
             let event = obj[ eventStr ];
-            if ( ! event ) {
+            if ( ! event ) { // Not found in the supported ones
                 continue;
             }
             event.convertedCommands = [];

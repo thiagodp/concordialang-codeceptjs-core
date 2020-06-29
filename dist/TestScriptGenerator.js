@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestScriptGenerator = void 0;
 const chalk = require("chalk");
 const logSymbols = require("log-symbols");
 const mustache_1 = require("mustache");
@@ -73,10 +74,11 @@ class TestScriptGenerator {
                 test.convertedCommands.push.apply(test.convertedCommands, converted);
             }
         }
+        // Events supported by CodeceptJS (beforeAll and afterAll are not supported)
         const events = ['beforeFeature', 'afterFeature', 'beforeEachScenario', 'afterEachScenario'];
         for (let eventStr of events) {
             let event = obj[eventStr];
-            if (!event) {
+            if (!event) { // Not found in the supported ones
                 continue;
             }
             event.convertedCommands = [];

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CodeceptJS = void 0;
 const fs = require("fs");
 const fse = require("node-fs-extra");
 const path_1 = require("path");

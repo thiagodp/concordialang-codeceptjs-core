@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CliCommandMaker = void 0;
 const path_1 = require("path");
 class CliCommandMaker {
     constructor(_defaultFrameworkConfig) {

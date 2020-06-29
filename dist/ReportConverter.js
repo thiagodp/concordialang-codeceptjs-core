@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReportConverter = void 0;
 const concordialang_plugin_1 = require("concordialang-plugin");
 const fs = require("fs");
 const util_1 = require("util");
