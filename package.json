@@ -38,6 +38,7 @@
         "switch:web": "npm run switch:un && npm i concordialang-types concordialang-plugin",
         "build": "rimraf dist && tsc",
         "test": "jest",
+        "cov": "jest --coverage",
         "all": "npm run build && npm run test",
         "preversion": "npm run all",
         "postversion": "git push && git push --tags"
