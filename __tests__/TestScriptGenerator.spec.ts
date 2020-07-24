@@ -1,7 +1,8 @@
-import { AbstractTestScript } from 'concordialang-plugin';
+import { AbstractTestScript, ATSCommand } from 'concordialang-plugin';
+
 import { CommandMapper } from '../src/CommandMapper';
 import { CODECEPTJS_COMMANDS } from '../src/Commands';
-import { TestScriptGenerator } from "../src/TestScriptGenerator";
+import { TestScriptGenerator } from '../src/TestScriptGenerator';
 
 describe( 'TestScriptGenerator', () => {
 
@@ -28,7 +29,25 @@ describe( 'TestScriptGenerator', () => {
 
     afterEach( () => {
         gen = null;
-    } );
+	} );
+
+
+	describe( '#analyzeConverted', () => {
+
+		it( 'returns and empty array when all arguments are undefined', () => {
+			expect( gen.analyzeConverted( undefined, undefined, undefined ) ).toEqual( [] );
+			expect( gen.analyzeConverted( [], undefined, undefined ) ).toEqual( [] );
+			expect( gen.analyzeConverted( undefined, new ATSCommand(), undefined ) ).toEqual( [] );
+			expect( gen.analyzeConverted( undefined, undefined, new AbstractTestScript() ) ).toEqual( [] );
+		} );
+
+		it( 'returns a comment with the command when the converted list is empty', () => {
+			const r = gen.analyzeConverted( [], new ATSCommand(), new AbstractTestScript() );
+			expect( r ).toEqual( [ '// COMMAND NOT ACCEPTED -> ' ] );
+		} );
+
+	} );
+
 
     it( 'generates code for a feature without scenarios and testcases', () => {
 
@@ -273,6 +292,40 @@ describe( 'TestScriptGenerator', () => {
         `;
 
         compare( testCase, expected );
+	} );
+
+
+	it( 'generates event', () => {
+
+        let testCase = {
+            "schemaVersion": "1.0",
+            "sourceFile": "path/to/somefile.testcase",
+			beforeEachScenario: {
+				commands: [
+					{
+						location: { "line": 3, "column": 3 },
+						action: "connect", options: [ 'database' ], values: [
+							'mydb', 'json:///C:\\db.json'
+						],
+					},
+					{
+						location: { "line": 4, "column": 3 },
+						action: "run", options: [ 'command' ], values: [ 'INSERT INTO foo VALUES ("bar")' ],
+					},
+				]
+			}
+        } as AbstractTestScript;
+
+		let expected = `
+			Feature("");
+            Before( async (I) => { // Before Each Scenario
+				I.connect("mydb", "json:///C:\\db.json"); // (3,3)
+				await I.runCommand('INSERT INTO foo VALUES ("bar")'); // (4,3)
+			});
+        `;
+
+        compare( testCase, expected );
     } );
+
 
 } );

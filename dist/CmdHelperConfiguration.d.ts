@@ -1,5 +1,5 @@
-import { TestScriptExecutionOptions } from "concordialang-plugin";
-import { HelperConfiguration } from "./HelperConfiguration";
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
+import { HelperConfiguration } from './HelperConfiguration';
 export declare class CmdHelperConfiguration implements HelperConfiguration {
     private readonly requireFile;
     constructor(requireFile?: string);

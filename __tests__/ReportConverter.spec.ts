@@ -1,6 +1,7 @@
 import { TestMethodResult, TestScriptExecutionResult, TestSuiteResult } from 'concordialang-plugin';
 import { fs as memfs, vol } from 'memfs';
 import { join, normalize } from 'path';
+
 import { ReportConverter } from '../src/ReportConverter';
 
 describe( 'ReportConverter', () => {

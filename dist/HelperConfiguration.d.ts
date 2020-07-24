@@ -1,4 +1,4 @@
-import { TestScriptExecutionOptions } from "concordialang-plugin";
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
 export interface HelperConfiguration {
     /**
      * Returns the helper name.

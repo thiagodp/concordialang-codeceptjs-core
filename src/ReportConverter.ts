@@ -1,4 +1,11 @@
-import { DefaultInstrumentationReader, FileInstrumentationReader, TestMethodResult, TestScriptExecutionResult, TestSuiteResult, TotalExecutionResult } from 'concordialang-plugin';
+import {
+    DefaultInstrumentationReader,
+    FileInstrumentationReader,
+    TestMethodResult,
+    TestScriptExecutionResult,
+    TestSuiteResult,
+    TotalExecutionResult,
+} from 'concordialang-plugin';
 import { Location } from 'concordialang-types';
 import * as fs from 'fs';
 import { promisify } from 'util';

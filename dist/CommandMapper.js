@@ -206,9 +206,15 @@ class CommandMapper {
      * @param cmd Abstract test script command
      */
     makeCommentWithCommand(cmd) {
+        if (!cmd) {
+            return '// COMMAND NOT ACCEPTED';
+        }
         return '// COMMAND NOT ACCEPTED -> ' + this.serializeCommand(cmd);
     }
     serializeCommand(cmd) {
+        if (!cmd) {
+            return '';
+        }
         let s = '';
         let count = 0;
         for (let prop in cmd) {

@@ -1,7 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CliCommandMaker = void 0;
+exports.CliCommandMaker = exports.addJS = void 0;
 const path_1 = require("path");
+/**
+ * Add wildcard to JS files to the given path.
+ *
+ * @param path Path
+ */
+function addJS(path) {
+    if (!path || /(\.js|\)|\})$/i.test(path)) {
+        return path;
+    }
+    const isUnix = path.includes('/');
+    if (isUnix) {
+        if (path.endsWith('/')) {
+            return path + '**/*.js';
+        }
+        return path + '/**/*.js';
+    }
+    const isWin = path.includes('\\');
+    if (isWin) {
+        if (path.endsWith('\\')) {
+            return path + '**\\*.js';
+        }
+        return path + '\\**\\*.js';
+    }
+    return path + '/**/*.js';
+}
+exports.addJS = addJS;
 class CliCommandMaker {
     constructor(_defaultFrameworkConfig) {
         this._defaultFrameworkConfig = _defaultFrameworkConfig;
@@ -34,7 +60,7 @@ class CliCommandMaker {
         // NOT NEEDED, IT'S ALREADY CONSIDERED IN --override :
         // cmd += ' -c codecept.json'; // load configuration file
         // Directory
-        if (!!options.dirScript && !options.file) {
+        if (!inParallel && !!options.dirScript && !options.file) {
             cmd += ` ${options.dirScript}`;
         }
         // Parameters
@@ -45,63 +71,110 @@ class CliCommandMaker {
         if (!!options.grep) {
             cmd += ` --grep "${options.grep}"`;
         }
-        // let browsers: string;
-        // if ( !! options.targets ) {
-        //     const browserNames = '\\\\"' +
-        //         options.targets
-        //             .split( ',' )
-        //             .map( b => b.trim() )
-        //             .join( '\\\\",\\\\"' ) +
-        //         '\\\\"';
-        //     browsers = `\\\\"browsers\\\\":[${browserNames}]`;
-        // }
-        if (!!options.file ||
-            !!options.dirResult ||
+        // Add browsers for parallel execution whether needed
+        let browsersForParallel = [];
+        if (inParallel) {
+            // If target is NOT defined, collect browser from helpers
+            if (!options.target) {
+                if (this._defaultFrameworkConfig &&
+                    this._defaultFrameworkConfig['helpers']) {
+                    for (const [, v] of Object.entries(this._defaultFrameworkConfig['helpers'])) {
+                        const browser = v['browser'];
+                        if (browser && !browsersForParallel.includes(browser)) {
+                            browsersForParallel.push(browser);
+                        }
+                    }
+                }
+            }
+            else {
+                browsersForParallel = options.target.split(',').map(b => b.trim());
+            }
+        }
+        const overrideObj = Object.assign({}, this._defaultFrameworkConfig);
+        // Makes the helper use the target browser, whether a target is defined
+        // and it is not a parallel execution.
+        const isToChangeBrowser = options.target && !inParallel;
+        const isToChangeShowToFalse = true === options.headless;
+        if (isToChangeBrowser || isToChangeShowToFalse) {
+            if (overrideObj['helpers']) {
+                for (const [, v] of Object.entries(overrideObj['helpers'])) {
+                    if (isToChangeBrowser && v['browser']) {
+                        const [firstTarget] = options.target.split(',');
+                        v['browser'] = firstTarget;
+                    }
+                    if (isToChangeShowToFalse && v['show']) {
+                        v['show'] = false;
+                    }
+                }
+            }
+        }
+        // Include browsers for parallel if not defined. That's not depend on the parallel flag !
+        if (overrideObj['multiple'] &&
+            overrideObj['multiple']['parallel'] &&
+            !overrideObj['multiple']['parallel']['browsers'] &&
+            browsersForParallel.length > 0) {
+            overrideObj['multiple']['parallel']['browsers'] = browsersForParallel;
+        }
+        if (options.dirScript &&
+            !options.file &&
+            // ! options.grep &&
+            overrideObj['tests']) {
+            overrideObj['tests'] = addJS(options.dirScript);
+        }
+        if (options.file ||
+            options.dirResult ||
             inParallel ||
-            !!options.target ||
-            !!options.headless) {
-            // const overridePieces: string[] = [];
-            // let overrideObj = {};
-            let overrideObj = Object.assign({}, this._defaultFrameworkConfig);
+            options.target ||
+            options.headless) {
             // console.log( 'BEFORE', overrideObj );
-            if (!!options.file) {
+            if (options.file) {
                 if (!options.dirScript) {
                     const files = options.file.split(',');
                     const globPattern = files.length > 1
                         ? `{${options.file}}`
                         : options.file;
                     // overridePieces.push( `\\\\"tests\\\\":\\\\"${globPattern}\\\\"` );
-                    overrideObj["tests"] = globPattern;
+                    overrideObj['tests'] = globPattern;
                 }
                 else if (!options.grep) {
-                    const toUnixPath = path => path.replace(/\\\\?/g, '/');
-                    const files = (options.file + '')
-                        .split(',')
-                        // Make paths using the source code dir
-                        // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
-                        .map(f => path_1.isAbsolute(f) ? f : toUnixPath(path_1.join(options.dirScript, f)));
-                    const fileNamesSeparatedByComma = files.length > 1 ? files.join(',') : files[0];
-                    // const globPattern = `${options.dirScripts}/**/*/{${fileNamesSeparatedByComma}}.js`;
-                    const globPattern = files.length > 1
-                        ? `{${fileNamesSeparatedByComma}}`
-                        : fileNamesSeparatedByComma;
-                    // overridePieces.push( `\\\\"tests\\\\":\\\\"${globPattern}\\\\"` );
-                    overrideObj["tests"] = globPattern;
+                    if (!options.file || '' === options.file.toString().trim()) {
+                        overrideObj['tests'] = addJS(options.dirScript);
+                    }
+                    else {
+                        const toUnixPath = path => path.replace(/\\\\?/g, '/');
+                        const files = (options.file + '')
+                            .split(',')
+                            // Make paths using the source code dir
+                            // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
+                            .map(f => path_1.isAbsolute(f) ? f : toUnixPath(path_1.join(options.dirScript, f)));
+                        const fileNamesSeparatedByComma = files.length > 1 ? files.join(',') : files[0];
+                        // const globPattern = `${options.dirScripts}/**/*/{${fileNamesSeparatedByComma}}.js`;
+                        const globPattern = files.length > 1
+                            ? `{${fileNamesSeparatedByComma}}`
+                            : fileNamesSeparatedByComma;
+                        // overridePieces.push( `\\\\"tests\\\\":\\\\"${globPattern}\\\\"` );
+                        overrideObj['tests'] = globPattern;
+                    }
                 }
+            }
+            else {
+                overrideObj['tests'] = addJS(options.dirScript);
             }
             if (!!options.dirResult) {
                 // overridePieces.push( `\\\\"output\\\\":\\\\"${options.dirResults}\\\\"` );
-                overrideObj["output"] = options.dirResult;
+                overrideObj['output'] = options.dirResult;
             }
             if (inParallel) {
                 // const multiple = browsers
                 //     ? `\\\\"multiple\\\\":{\\\\"parallel\\\\":{\\\\"chunks\\\\":${options.instances},${browsers}}}`
                 //     : `\\\\"multiple\\\\":{\\\\"parallel\\\\":{\\\\"chunks\\\\":${options.instances}}}`;
                 // overridePieces.push( multiple );
-                overrideObj["multiple"] = {
+                const browsersToUse = browsersForParallel.length > 0
+                    ? browsersForParallel : undefined;
+                overrideObj['multiple'] = {
                     "parallel": {
                         "chunks": options.instances,
-                        "browsers": options.target ? options.target.split(',').map(b => b.trim()) : undefined
+                        "browsers": browsersToUse,
                     }
                 };
                 // } else if ( browsers ) {
@@ -195,7 +268,8 @@ class CliCommandMaker {
         else { // if ( 'mochawesome' === reporter ) {
             cmd += ` --reporter mochawesome --reporter-options reportDir=${outputDir},reportFilename=output.json`;
         }
-        cmd += inParallel ? ' || echo .' : ' --colors || echo .';
+        const complement = ''; // ' || echo .';
+        cmd += inParallel ? complement : ' --colors' + complement;
         return [cmd, backupFile, obj];
     }
 }

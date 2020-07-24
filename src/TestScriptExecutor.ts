@@ -6,7 +6,8 @@ import { access, constants, readFile, unlink, writeFile } from 'fs';
 import * as fse from 'node-fs-extra';
 import { join } from 'path';
 import { promisify } from 'util';
-import { CliCommandMaker } from './CliCommandMaker';
+
+import { addJS, CliCommandMaker } from './CliCommandMaker';
 import { CmdHelperConfiguration } from './CmdHelperConfiguration';
 import { ConfigMaker } from './ConfigMaker';
 import { DbHelperConfiguration } from './DbHelperConfiguration';
@@ -85,7 +86,9 @@ export class TestScriptExecutor {
             if ( ! config ) {
                 config = this.createBasicConfiguration( options );
             }
-        }
+		}
+
+		// Add helpers
         const changed = this.updateConfiguration( config, options );
         if ( changed ) {
             await this.writeConfigurationFile( codeceptJSConfigFile, config, true );
@@ -124,7 +127,16 @@ export class TestScriptExecutor {
 
         showInfo( 'Running test scripts...' );
         writeln( ' ', textCommand( cmd ) );
-        const code: number = await this.runCommand( cmd );
+		const code: number = await this.runCommand( cmd );
+
+		// Unfortunately CodeceptJS returns any error as 1. Therefore, results
+		// from test execution and problems with the tool are reported the
+		// same way to the OS. There is no way to differentiate a test failure
+		// from a CodeceptJS error or a command execution error.
+		//
+		// if ( code != 0 ) {
+		// 	throw new Error( 'Error executing the script command.' );
+		// }
 
         // Restoring the backup if needed
 
@@ -143,19 +155,20 @@ export class TestScriptExecutor {
 
         const OUTPUT_FILE_NAME = 'output.json';
         const outputFilePath = join( options.dirResult || '.', OUTPUT_FILE_NAME );
-        showInfo( 'Retrieving results from', outputFilePath, '...' );
 
         return outputFilePath;
     }
 
     protected createBasicConfiguration( options: TestScriptExecutionOptions ): any {
-        const scriptFileFilter = join( options.dirScript, '**/*.js' );
+        const scriptFileFilter = addJS( options.dirScript );
         const cfgMaker = new ConfigMaker();
         const config = cfgMaker.makeBasicConfig( scriptFileFilter, options.dirResult );
         return config;
     }
 
     protected updateConfiguration( config: any, options: TestScriptExecutionOptions ): boolean {
+
+		// HELPERS
 
         const helpers: Array< HelperConfiguration > = [
             new DbHelperConfiguration(),
@@ -171,7 +184,44 @@ export class TestScriptExecutor {
                 cfgMaker.setHelper( config, helper, options );
                 changed = true;
             }
-        }
+		}
+
+		// MULTIPLE BROWSER AND PARALLEL
+
+		// Add browsers for parallel execution whether needed
+		let browsersForParallel: string[] = [];
+
+		if ( options.target ) {
+			browsersForParallel = options.target.split( ',' ).map( b => b.trim() );
+		} else {
+			// Collect browser from helpers
+			if ( config[ 'helpers' ] ) {
+				for ( const [ , v ] of Object.entries( config[ 'helpers' ] ) ) {
+					const browser = v[ 'browser' ];
+					if ( browser && ! browsersForParallel.includes( browser ) ) {
+						browsersForParallel.push( browser );
+					}
+				}
+			}
+		}
+
+		// Include browsers for parallel IF NOT DEFINED.
+		// That's not depend on the parallel flag !
+		if ( browsersForParallel.length > 0 &&
+			config[ 'multiple' ] &&
+			config[ 'multiple' ][ 'parallel' ] &&
+			! config[ 'multiple' ][ 'parallel' ][ 'browsers' ] ||
+			(
+				Array.isArray( config[ 'multiple' ][ 'parallel' ][ 'browsers' ] ) &&
+				(
+					0 === config[ 'multiple' ][ 'parallel' ][ 'browsers' ].length ||
+					config[ 'multiple' ][ 'parallel' ][ 'browsers' ].join( ',' ) === browsersForParallel.join( ',' )
+				)
+			)
+		) {
+			changed = true;
+			config[ 'multiple' ][ 'parallel' ][ 'browsers' ] = browsersForParallel;
+		}
 
         return changed;
     }

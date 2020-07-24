@@ -1,5 +1,5 @@
 import { AbstractTestScript, ATSCommand } from 'concordialang-plugin';
-import { CommandMapper } from "./CommandMapper";
+import { CommandMapper } from './CommandMapper';
 /**
  * Generate test scripts for CodeceptJS.
  *

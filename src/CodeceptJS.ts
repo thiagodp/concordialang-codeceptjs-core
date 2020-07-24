@@ -1,8 +1,16 @@
-import { AbstractTestScript, Plugin, TestScriptExecutionOptions, TestScriptExecutionResult, TestScriptGenerationOptions, TestScriptGenerationResult } from 'concordialang-plugin';
+import {
+    AbstractTestScript,
+    Plugin,
+    TestScriptExecutionOptions,
+    TestScriptExecutionResult,
+    TestScriptGenerationOptions,
+    TestScriptGenerationResult,
+} from 'concordialang-plugin';
 import * as fs from 'fs';
 import * as fse from 'node-fs-extra';
 import { basename, dirname, join, relative, resolve } from 'path';
 import { promisify } from 'util';
+
 import { CommandMapper } from './CommandMapper';
 import { CODECEPTJS_COMMANDS } from './Commands';
 import { ReportConverter } from './ReportConverter';

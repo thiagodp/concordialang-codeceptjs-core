@@ -1,9 +1,11 @@
 import * as chalk from 'chalk';
 import { AbstractTestScript, ATSCommand } from 'concordialang-plugin';
 import * as logSymbols from 'log-symbols';
-import { render } from "mustache";
+import { render } from 'mustache';
 import { relative } from 'path';
-import { CommandMapper } from "./CommandMapper";
+
+import { CommandMapper } from './CommandMapper';
+
 const dedent = require('dedent-js');
 
 /**
@@ -76,9 +78,9 @@ export class TestScriptGenerator {
 
         let obj: any = { ... ats }; // spread to do a deep clone
 
-        for ( let test of obj.testcases || [] ) {
+        for ( let test of ( obj.testcases || [] ) ) {
             test.convertedCommands = [];
-            for ( let cmd of test.commands || [] ) {
+            for ( let cmd of ( test.commands || [] ) ) {
                 let converted: string[] = this.analyzeConverted( this._mapper.map( cmd ), cmd, ats );
                 test.convertedCommands.push.apply( test.convertedCommands, converted );
             }
@@ -92,7 +94,7 @@ export class TestScriptGenerator {
                 continue;
             }
             event.convertedCommands = [];
-            for ( let cmd of event.commands || [] ) {
+            for ( let cmd of ( event.commands || [] ) ) {
                 let converted: string[] = this.analyzeConverted( this._mapper.map( cmd ), cmd, ats );
                 event.convertedCommands.push.apply( event.convertedCommands, converted );
             }
@@ -102,7 +104,7 @@ export class TestScriptGenerator {
     }
 
     analyzeConverted( converted: string[], cmd: ATSCommand, ats: AbstractTestScript ): string[] {
-        if ( 0 === converted.length ) {
+        if ( converted && 0 === converted.length && ats && cmd ) {
 
             const filePath = this._specificationDir
                 ? relative( this._specificationDir, ats.sourceFile )
@@ -110,12 +112,12 @@ export class TestScriptGenerator {
 
             console.log( logSymbols.warning,
                 'Plug-in could not convert command from',
-                chalk.yellowBright( filePath ),
-                '(' + cmd.location.line + ',' + cmd.location.column + ')'
+				chalk.yellowBright( filePath ),
+				cmd.location ? '(' + cmd.location.line + ',' + cmd.location.column + ')' : ''
             );
             return [ this._mapper.makeCommentWithCommand( cmd ) ];
         }
-        return converted;
+        return converted || [];
     };
 
 

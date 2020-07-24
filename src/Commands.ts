@@ -1,4 +1,4 @@
-import { CmdCmp, CmdCfg, OptionsOptions } from "./CommandMapper";
+import { CmdCfg, CmdCmp, OptionsOptions } from './CommandMapper';
 
 /** Maps available commands. ORDER MATTERS */
 export const CODECEPTJS_COMMANDS: CmdCfg[] = [

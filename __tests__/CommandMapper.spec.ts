@@ -1,4 +1,5 @@
 import { ATSCommand } from 'concordialang-plugin';
+
 import { CommandMapper } from '../src/CommandMapper';
 import { CODECEPTJS_COMMANDS } from '../src/Commands';
 
@@ -14,7 +15,20 @@ describe( 'CommandMapper', () => {
 
     afterEach( () => {
         cm = null;
-    } );
+	} );
+
+	describe( '#makeCommentWithCommand', () => {
+		it( 'returns a comment without a command when it is not defined', () => {
+			expect( cm.makeCommentWithCommand( undefined ) )
+				.toEqual( '// COMMAND NOT ACCEPTED' );
+		} );
+	} );
+
+	describe( '#serializeCommand', () => {
+		it( 'returns an empty string when the command is not defined', () => {
+			expect( cm.serializeCommand( undefined ) ).toEqual( '' );
+		} );
+	} );
 
     describe( '#escapeDoubleQuotes', () => {
         it( 'escape', () => {

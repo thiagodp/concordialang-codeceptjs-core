@@ -67,9 +67,9 @@ class TestScriptGenerator {
     generate(ats) {
         // console.log( 'FROM', ats.sourceFile );
         let obj = Object.assign({}, ats); // spread to do a deep clone
-        for (let test of obj.testcases || []) {
+        for (let test of (obj.testcases || [])) {
             test.convertedCommands = [];
-            for (let cmd of test.commands || []) {
+            for (let cmd of (test.commands || [])) {
                 let converted = this.analyzeConverted(this._mapper.map(cmd), cmd, ats);
                 test.convertedCommands.push.apply(test.convertedCommands, converted);
             }
@@ -82,7 +82,7 @@ class TestScriptGenerator {
                 continue;
             }
             event.convertedCommands = [];
-            for (let cmd of event.commands || []) {
+            for (let cmd of (event.commands || [])) {
                 let converted = this.analyzeConverted(this._mapper.map(cmd), cmd, ats);
                 event.convertedCommands.push.apply(event.convertedCommands, converted);
             }
@@ -90,14 +90,14 @@ class TestScriptGenerator {
         return mustache_1.render(this.template, obj); // mustache's renderer
     }
     analyzeConverted(converted, cmd, ats) {
-        if (0 === converted.length) {
+        if (converted && 0 === converted.length && ats && cmd) {
             const filePath = this._specificationDir
                 ? path_1.relative(this._specificationDir, ats.sourceFile)
                 : ats.sourceFile;
-            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk.yellowBright(filePath), '(' + cmd.location.line + ',' + cmd.location.column + ')');
+            console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk.yellowBright(filePath), cmd.location ? '(' + cmd.location.line + ',' + cmd.location.column + ')' : '');
             return [this._mapper.makeCommentWithCommand(cmd)];
         }
-        return converted;
+        return converted || [];
     }
     ;
 }

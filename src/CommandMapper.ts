@@ -1,5 +1,5 @@
-import { render } from "mustache";
-import { ATSCommand } from "concordialang-plugin";
+import { ATSCommand } from 'concordialang-plugin';
+import { render } from 'mustache';
 
 /**
  * Command comparison
@@ -268,10 +268,16 @@ export class CommandMapper {
      * @param cmd Abstract test script command
      */
     makeCommentWithCommand( cmd: ATSCommand ): string {
+		if ( ! cmd ) {
+			return '// COMMAND NOT ACCEPTED';
+		}
         return '// COMMAND NOT ACCEPTED -> ' + this.serializeCommand( cmd );
     }
 
     serializeCommand( cmd: ATSCommand ): string {
+		if ( ! cmd ) {
+			return '';
+		}
         let s = '';
         let count = 0;
         for ( let prop in cmd ) {

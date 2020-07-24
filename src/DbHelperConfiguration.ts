@@ -1,5 +1,6 @@
-import { TestScriptExecutionOptions } from "concordialang-plugin";
-import { HelperConfiguration } from "./HelperConfiguration";
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
+
+import { HelperConfiguration } from './HelperConfiguration';
 
 export class DbHelperConfiguration implements HelperConfiguration {
 

@@ -1,12 +1,33 @@
-import { TestScriptExecutionOptions } from 'concordialang-plugin';
-import { CliCommandMaker } from '../src/CliCommandMaker';
+import 'jest-extended';
 
-import "jest-extended";
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
+
+import { addJS, CliCommandMaker } from '../src/CliCommandMaker';
 
 describe( 'CliCommandMaker', () => {
 
     let cmdMaker = new CliCommandMaker( null );
-    const s = `\\\\\\\"`;
+	const s = `\\\\\\\"`;
+
+	describe( '#addJS', () => {
+		it.each( [
+			[ 'foo.js', 'foo.js' ],
+			[ '*.js', '*.js' ],
+			[ './*.js', './*.js' ],
+			[ '.\\*.js', '.\\*.js' ],
+			[ '/', '/**/*.js' ],
+			[ 'foo/', 'foo/**/*.js' ],
+			[ 'foo\\', 'foo\\**\\*.js' ],
+			[ 'test', 'test/**/*.js'],
+			[ 'C:/test', 'C:/test/**/*.js' ],
+			[ 'C:/test/', 'C:/test/**/*.js' ],
+			[ '\\test', '\\test\\**\\*.js' ],
+			[ '\\test\\', '\\test\\**\\*.js' ],
+		] )
+		( '"%s" should return "%s"', ( given, expected ) => {
+			expect( addJS( given ) ).toEqual( expected );
+		} );
+	} );
 
     describe( '#makeCommand', () => {
 
@@ -150,7 +171,7 @@ describe( 'CliCommandMaker', () => {
                 target: 'chrome,firefox'
             };
             const cmd = cmdMaker.makeCmd( options );
-            const expectedBeginning = `npx codeceptjs run-multiple parallel tests --override "{${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2,${s}browsers${s}:[${s}chrome${s},${s}firefox${s}]}}}"`;
+            const expectedBeginning = `npx codeceptjs run-multiple parallel --override "{${s}tests${s}:${s}tests/**/*.js${s},${s}multiple${s}:{${s}parallel${s}:{${s}chunks${s}:2,${s}browsers${s}:[${s}chrome${s},${s}firefox${s}]}}}"`;
             expect( cmd ).toStartWith( expectedBeginning );
         } );
 

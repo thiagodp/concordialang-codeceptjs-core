@@ -1,6 +1,7 @@
+import { TestScriptExecutionOptions } from 'concordialang-plugin';
 import { join, relative } from 'path';
+
 import { HelperConfiguration } from './HelperConfiguration';
-import { TestScriptExecutionOptions } from 'concordialang-plugin/dist';
 
 const toUnixPath = ( path: string ): string => {
     return path.replace( /\\/g, '/' );
