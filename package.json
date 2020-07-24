@@ -1,6 +1,6 @@
 {
     "name": "concordialang-codeceptjs-core",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "description": "Concordia compiler plug-in core for CodeceptJS",
     "license": "AGPL-3.0",
     "readme": "readme.md",
