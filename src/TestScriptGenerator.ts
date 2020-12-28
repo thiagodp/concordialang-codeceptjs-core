@@ -31,7 +31,7 @@ export class TestScriptGenerator {
         Feature("{{feature.name}}");
         {{#beforeFeature}}
 
-        BeforeSuite( async (I) => { // Before Feature
+        BeforeSuite( async ({I}) => { // Before Feature
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}
@@ -39,7 +39,7 @@ export class TestScriptGenerator {
         {{/beforeFeature}}
         {{#afterFeature}}
 
-        AfterSuite( async (I) => { // After Feature
+        AfterSuite( async ({I}) => { // After Feature
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}
@@ -47,7 +47,7 @@ export class TestScriptGenerator {
         {{/afterFeature}}
         {{#beforeEachScenario}}
 
-        Before( async (I) => { // Before Each Scenario
+        Before( async ({I}) => { // Before Each Scenario
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}
@@ -55,7 +55,7 @@ export class TestScriptGenerator {
         {{/beforeEachScenario}}
         {{#afterEachScenario}}
 
-        After( async (I) => { // After Each Scenario
+        After( async ({I}) => { // After Each Scenario
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}
@@ -63,7 +63,7 @@ export class TestScriptGenerator {
         {{/afterEachScenario}}
 
         {{#testcases}}
-        Scenario("{{scenario}} | {{name}}", (I) => {
+        Scenario("{{scenario}} | {{name}}", ({I}) => {
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}
