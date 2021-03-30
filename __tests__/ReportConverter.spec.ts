@@ -1,4 +1,4 @@
-import { TestMethodResult, TestScriptExecutionResult, TestSuiteResult } from 'concordialang-plugin';
+import { TestMethodResult, TestScriptExecutionResult, TestSuiteResult } from 'concordialang-types';
 import { fs as memfs, vol } from 'memfs';
 import { join, normalize } from 'path';
 

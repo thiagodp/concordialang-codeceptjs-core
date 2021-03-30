@@ -60,10 +60,10 @@
     },
     "dependencies": {
         "chalk": "^3.0.0",
-        "codeceptjs-cmdhelper": "^2.2.1",
+        "codeceptjs-cmdhelper": "^2.2.3",
         "codeceptjs-dbhelper": "^1.0.1",
-        "concordialang-plugin": "^1.0.0",
-        "concordialang-types": "^2.0.0",
+        "concordialang-plugin": "^1.1.0",
+        "concordialang-types": "^2.1.4",
         "dedent-js": "^1.0.1",
         "figures": "^3.2.0",
         "log-symbols": "^3.0.0",
@@ -72,12 +72,12 @@
     },
     "devDependencies": {
         "@types/jest": "^25.2.3",
-        "@types/node": "^8.10.62",
+        "@types/node": "^8.10.66",
         "jest": "^25.5.4",
         "jest-extended": "^0.11.5",
         "memfs": "^2.17.1",
         "rimraf": "^3.0.2",
         "ts-jest": "^25.5.1",
-        "typescript": "^3.9.7"
+        "typescript": "^3.9.9"
     }
 }

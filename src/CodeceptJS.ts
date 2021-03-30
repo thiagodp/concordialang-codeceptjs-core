@@ -2,10 +2,10 @@ import {
     AbstractTestScript,
     Plugin,
     TestScriptExecutionOptions,
-    TestScriptExecutionResult,
     TestScriptGenerationOptions,
     TestScriptGenerationResult,
 } from 'concordialang-plugin';
+import { TestScriptExecutionResult } from 'concordialang-types';
 import * as fs from 'fs';
 import * as fse from 'node-fs-extra';
 import { basename, dirname, join, relative, resolve } from 'path';
