@@ -1,5 +1,7 @@
 import { CmdCfg, CmdCmp, OptionsOptions } from './CommandMapper';
 
+var varCount: number = 0;
+
 /** Maps available commands. ORDER MATTERS */
 export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     // accept
@@ -7,6 +9,12 @@ export const CODECEPTJS_COMMANDS: CmdCfg[] = [
     { action: 'accept', comp: CmdCmp.SAME_OPTION, options: [ 'confirm' ], template: 'I.acceptPopup();' },
     { action: 'accept', comp: CmdCmp.SAME_OPTION, options: [ 'popup' ], template: 'I.acceptPopup();' },
     { action: 'accept', comp: CmdCmp.SAME_OPTION, options: [ 'prompt' ], template: 'I.acceptPopup();' },
+
+    { action: 'accept', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'alert' ], valuesAsNonArray: true, template: `const popupText${++varCount} = await I.grabPopupText(); I.acceptPopup(); assert.equal(popupText${varCount}, {{{value}}});` },
+    { action: 'accept', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'confirm' ], valuesAsNonArray: true, template: `const popupText${++varCount} = await I.grabPopupText(); I.acceptPopup(); assert.equal(popupText${varCount}, {{{value}}});` },
+    { action: 'accept', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'popup' ], valuesAsNonArray: true, template: `const popupText${++varCount} = await I.grabPopupText(); I.acceptPopup(); assert.equal(popupText${varCount}, {{{value}}});` },
+    { action: 'accept', comp: CmdCmp.SAME_OPTION__ONE_VALUE, options: [ 'prompt' ], valuesAsNonArray: true, template: `const popupText${++varCount} = await I.grabPopupText(); I.acceptPopup(); assert.equal(popupText${varCount}, {{{value}}});` },
+
     // amOn
     { action: 'amOn', comp: CmdCmp.SAME_TARGET_TYPE__ONE_TARGET, targetTypes: 'url', template: 'I.amOnPage({{{target}}});' },
     { action: 'amOn', comp: CmdCmp.ONE_VALUE, template: 'I.amOnPage({{{value}}});' },

@@ -21,6 +21,8 @@ class TestScriptGenerator {
         //
         // THIS IS A GENERATED FILE - MODIFICATIONS CAN BE LOST !
 
+        const assert = require("assert").strict;
+
         Feature("{{feature.name}}");
         {{#beforeFeature}}
 
@@ -56,7 +58,7 @@ class TestScriptGenerator {
         {{/afterEachScenario}}
 
         {{#testcases}}
-        Scenario("{{scenario}} | {{name}}", (I) => {
+        Scenario("{{scenario}} | {{name}}", async (I) => {
             {{#convertedCommands}}
             {{{.}}}
             {{/convertedCommands}}

@@ -8,6 +8,8 @@ describe( 'TestScriptGenerator', () => {
 
     let gen: TestScriptGenerator; // under test
 
+    const assertLine = 'const assert = require("assert").strict;';
+
     const LINES_TO_IGNORE = 5;
 
     function uglify(string: string): string{
@@ -63,6 +65,7 @@ describe( 'TestScriptGenerator', () => {
         } as AbstractTestScript;
 
         let expected = `
+            ${assertLine}
             Feature("login");
         `;
 
@@ -107,9 +110,10 @@ describe( 'TestScriptGenerator', () => {
         } as AbstractTestScript;
 
         let expected = `
+            ${assertLine}
             Feature("login");
-            Scenario("successful login | finishes successfully valid values", (I) => {});
-            Scenario("unsuccessful login | finishes unsuccessfully invalid values", (I) => {});
+            Scenario("successful login | finishes successfully valid values", async (I) => {});
+            Scenario("unsuccessful login | finishes unsuccessfully invalid values", async (I) => {});
         `;
 
         compare( testCase, expected );
@@ -169,9 +173,11 @@ describe( 'TestScriptGenerator', () => {
         } as AbstractTestScript;
 
         let expected = `
+            ${assertLine}
+
             Feature("login");
 
-            Scenario("successful login | finishes successfully with valid values", (I) => {
+            Scenario("successful login | finishes successfully with valid values", async (I) => {
                 I.see("Login"); // (40,1)
                 I.fillField('#username', "bob"); // (41,1)
                 I.fillField('#password', "b0bp4s$"); // (42,1)
@@ -274,16 +280,18 @@ describe( 'TestScriptGenerator', () => {
         } as AbstractTestScript;
 
         let expected = `
+            ${assertLine}
+
             Feature("login");
 
-            Scenario("successful login | finishes successfully with valid values", (I) => {
+            Scenario("successful login | finishes successfully with valid values", async (I) => {
                 I.see("Login"); // (41,1)
                 I.fillField('#username', "bob"); // (42,1)
                 I.fillField('#password', "b0bp4s$"); // (43,1)
                 I.click('#enter'); // (44,1)
             });
 
-            Scenario("unsuccessful login | finishes unsuccessfully with invalid values", (I) => {
+            Scenario("unsuccessful login | finishes unsuccessfully with invalid values", async (I) => {
                 I.see("Login"); // (41,1)
                 I.fillField('#username', "kdsldhçs dwd"); // (42,1)
                 I.fillField('#password', "d0d s98 23923 2 32$"); // (43,1)
@@ -317,6 +325,7 @@ describe( 'TestScriptGenerator', () => {
         } as AbstractTestScript;
 
 		let expected = `
+            ${assertLine}
 			Feature("");
             Before( async (I) => { // Before Each Scenario
 				I.connect("mydb", "json:///C:\\db.json"); // (3,3)
