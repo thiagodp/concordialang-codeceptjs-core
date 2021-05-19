@@ -1,5 +1,5 @@
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
-import { join, relative } from 'path';
+import { isAbsolute, join, relative } from 'path';
 
 import { HelperConfiguration } from './HelperConfiguration';
 

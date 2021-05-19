@@ -9,3 +9,4 @@ export * from './HelperConfiguration';
 export * from './ReportConverter';
 export * from './TestScriptExecutor';
 export * from './TestScriptGenerator';
+export * from './cjs';

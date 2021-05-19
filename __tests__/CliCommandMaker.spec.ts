@@ -2,7 +2,8 @@ import 'jest-extended';
 
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
 
-import { addJS, CliCommandMaker } from '../src/CliCommandMaker';
+import { CliCommandMaker } from '../src/CliCommandMaker';
+import { addJSWildcard } from '../src/wildcard';
 
 describe( 'CliCommandMaker', () => {
 
@@ -25,7 +26,7 @@ describe( 'CliCommandMaker', () => {
 			[ '\\test\\', '\\test\\**\\*.js' ],
 		] )
 		( '"%s" should return "%s"', ( given, expected ) => {
-			expect( addJS( given ) ).toEqual( expected );
+			expect( addJSWildcard( given ) ).toEqual( expected );
 		} );
 	} );
 

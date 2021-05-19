@@ -1,17 +1,17 @@
 import * as chalk from 'chalk';
-import * as childProcess from 'child_process';
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
 import { arrowRight, cross, info, warning } from 'figures';
-import { access, constants, readFile, unlink, writeFile } from 'fs';
+import { readFile, writeFile } from 'fs';
 import * as fse from 'node-fs-extra';
-import { join } from 'path';
+import { isAbsolute, join } from 'path';
 import { promisify } from 'util';
 
-import { addJS, CliCommandMaker } from './CliCommandMaker';
+import { Codecept } from './cjs';
 import { CmdHelperConfiguration } from './CmdHelperConfiguration';
 import { ConfigMaker } from './ConfigMaker';
 import { DbHelperConfiguration } from './DbHelperConfiguration';
 import { HelperConfiguration } from './HelperConfiguration';
+import { addJSWildcard } from './wildcard';
 
 // UI ----------------------------------
 
@@ -69,106 +69,316 @@ export class TestScriptExecutor {
 
         const executionPath = process.cwd();
 
-        // codecept.json -------------------------------------------------------
 
-        const codeceptJSConfigFile = join( executionPath, 'codecept.json' );
+        //
+        // Load configuration file
+        //
 
-        let configFileExists: boolean = await this.fileExists( codeceptJSConfigFile );
+        let configFile: string;
+        const jsonConfigFile = join( executionPath, 'codecept.json' );
+        const jsConfigFile = './codecept.conf.js';
+        const readF = promisify( readFile );
+        let cfgFileType: 'none' | 'json' | 'js' = 'none';
+        let cfg;
 
-        let config: any;
+        // Read JSON config file
+        try {
+            const jsonContent = await readF( jsonConfigFile, { encoding: 'UTF-8' } );
+            cfg = JSON.parse( jsonContent.toString() );
+            cfgFileType = 'json';
+            configFile = jsonConfigFile;
+        } catch {
+            // ignore - JSON config file not found
+        }
 
-        // It's only possible to run CodeceptJS if there is a config file
-        if ( ! configFileExists ) {
-            config = this.createBasicConfiguration( options );
-            configFileExists = await this.writeConfigurationFile( codeceptJSConfigFile, config, false );
-        } else {
-            config = await this.readConfigurationFile( codeceptJSConfigFile );
-            if ( ! config ) {
-                config = this.createBasicConfiguration( options );
+        // Read JS config file if the JSON file was not found
+        if ( ! cfg ) {
+            try {
+                const jsContent = await require( jsConfigFile );
+                cfg = jsContent.config;
+                cfgFileType = 'js';
+                configFile = jsConfigFile;
+            } catch {
+                // ignore - JS config file not found
             }
+        }
+
+        // Create a basic JSON configuration file if none exists
+
+        if ( ! cfg ) {
+            writeln( iconWarning, textColor( 'No CodeceptJS configuration file was found (codecept.json or codecept.conf.js).' ) );
+            writeln( iconInfo, textColor( 'Creating' ), highlight( jsonConfigFile ), textColor( 'for you...' ) );
+            cfg = this.createBasicConfiguration( options );
+
+            // Add Helpers
+            this.addHelpers( cfg, options );
+
+            await this.writeJsonConfigurationFile( jsonConfigFile, cfg, false );
+
+        // Add helpers
+        } else {
+
+            showInfo( 'Configuration file', configFile );
+            const changed: boolean = this.addHelpers( cfg, options ); // Add Helpers
+
+            // Rewrite the JSON configuration file if needed
+            // TO-DO: Allow to update a JS config file
+            if ( changed && 'json' == cfgFileType ) {
+                await this.writeJsonConfigurationFile( jsonConfigFile, cfg, true );
+            }
+        }
+
+        //
+        // Adjust configuration from Concordia parameters
+        //
+
+        const isInParallel = options.instances && options.instances > 1;
+
+		let configuredBrowsers: string[] = [];
+
+		if ( options.target ) {
+			configuredBrowsers = options.target.split( ',' ).map( b => b.trim() );
+		} else {
+			// Collect browser from helpers
+			if ( cfg[ 'helpers' ] ) {
+				for ( const [ , v ] of Object.entries( cfg[ 'helpers' ] ) ) {
+					const browser = v[ 'browser' ];
+					if ( browser && ! configuredBrowsers.includes( browser ) ) {
+						configuredBrowsers.push( browser );
+					}
+				}
+			}
 		}
 
-		// Add helpers
-        const changed = this.updateConfiguration( config, options );
-        if ( changed ) {
-            await this.writeConfigurationFile( codeceptJSConfigFile, config, true );
-        }
+		if ( isInParallel ) {
 
-        // Run CodeceptJS ------------------------------------------------------
+            // Include browsers for parallel if not defined. That's not depend on the parallel flag !
+            if ( configuredBrowsers.length > 0 ) {
+                cfg[ 'multiple' ] = {
+                    "parallel": {
+                        "chunks": options.instances,
+                        "browsers": configuredBrowsers,
+                    }
+                };
+            }
 
-        const commandMaker = new CliCommandMaker( config );
-        const [ cmd, needsToCreateBackup, tempConfig ] = commandMaker.makeCommand( options );
 
-        // Preparing backup file if needed
-        //
-        //      CodeceptJS' parameter --override has a bug in which it does not
-        //      accept a JSON content with one or more spaces. As a workaround,
-        //      we are creating a backup copy of the original configuration file
-        //      and restoring it after executing the test scripts.
-        //
+		} else { // Not in parallel
 
-        const backupFile = 'codecept-backup-' + Date.now() + '.json';
-        let backupFileCreated: boolean = false;
+            // Change the helpers to use the target browser when
+            // a target browser is defined and it is not parallel execution.
 
-        if ( configFileExists && needsToCreateBackup ) {
-            try {
-                // Create a backup copy
-                await this.copyFile( codeceptJSConfigFile, backupFile );
-                // Overwrite current configuration file
-                await this.writeObjectToFile( codeceptJSConfigFile, tempConfig );
-                // Indicate success
-                backupFileCreated = true;
-            } catch ( e ) {
-                writeln( iconError, textColor( 'Error copying the configuration file' ), highlight( codeceptJSConfigFile ) );
+            if ( cfg[ 'helpers' ] && ( options.target || true === options.headless ) ) {
+
+                const [ firstTargetBrowser ] = configuredBrowsers;
+
+                for ( const [ , v ] of Object.entries( cfg[ 'helpers' ] ) ) {
+
+                    if ( options.target && v[ 'browser' ] ) {
+                        v[ 'browser' ] = firstTargetBrowser;
+                    }
+
+                    if ( true === options.headless && v[ 'show' ] ) {
+                        v[ 'show' ] = false;
+                    }
+
+                }
             }
         }
 
-        // Running the test scripts
 
-        showInfo( 'Running test scripts...' );
-        writeln( ' ', textCommand( cmd ) );
-		const code: number = await this.runCommand( cmd );
+        // Define (result) output directory if defined
+        if ( !! options.dirResult ) {
+            cfg[ 'output' ] = options.dirResult;
+        }
 
-		// Unfortunately CodeceptJS returns any error as 1. Therefore, results
-		// from test execution and problems with the tool are reported the
-		// same way to the OS. There is no way to differentiate a test failure
-		// from a CodeceptJS error or a command execution error.
-		//
-		// if ( code != 0 ) {
-		// 	throw new Error( 'Error executing the script command.' );
-		// }
 
-        // Restoring the backup if needed
+        // Define wildcard to JS files if not file is detected
+        if ( ! options.file || '' === options.file.toString().trim() ) {
+            cfg[ 'tests' ] = addJSWildcard( options.dirScript );
 
-        if ( backupFileCreated ) {
-            try {
-                // Copy the backup file back
-                await this.copyFile( backupFile, codeceptJSConfigFile );
-                // Delete the backup file
-                await this.deleteFile( backupFile );
-            } catch ( e ) {
-                writeln( iconError, textColor( 'Error restoring the backup file' ), highlight( backupFile ) );
+        // Create glob for file name
+        } else {
+
+            if ( ! options.dirScript ) { // No directory -> use glob for a single or multiple files
+
+                const files = options.file.split( ',' );
+                const globPattern = files.length > 1 ? `{${options.file}}` : options.file;
+                cfg[ 'tests' ] = globPattern;
+
+            } else if ( ! options.grep ) { // No grep -> separate files, add full path, and make glob
+
+                const toUnixPath = path => path.replace( /\\\\?/g, '/' );
+
+                const files = ( options.file + '' )
+                    .split( ',' )
+                    // Make paths using the source code dir
+                    // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
+                    .map( f => isAbsolute( f ) ? f : toUnixPath( join( options.dirScript, f ) ) )
+                    ;
+
+                const fileNamesSeparatedByComma = files.length > 1 ? files.join( ',' ) : files[ 0 ];
+
+                const globPattern = files.length > 1
+                    ? `{${fileNamesSeparatedByComma}}`
+                    : fileNamesSeparatedByComma;
+
+                cfg[ 'tests' ] = globPattern;
+
+            }
+
+        }
+
+        // Playwright - Fix browser from 'chrome' to 'chromium' whether defined
+
+        if ( 'chrome' === options.target && cfg[ 'helpers' ] && cfg[ 'helpers' ][ 'Playwright' ] ) {
+            options.target = 'chromium';
+            writeln( iconWarning, 'Playwright does not support "chrome" but "chromium". Please fix it to remove this warning. Using "chromium".' );
+        }
+
+
+        // WebDriverIO - experimental "multiremote" configuration for multiple browsers.
+        // @see https://codecept.io/helpers/WebDriver/#multiremote-capabilities
+        // @see http://webdriver.io/guide/usage/multiremote.html
+
+        if ( options.target && cfg[ 'helpers' ] && cfg[ 'helpers' ][ 'WebDriverIO' ] ) {
+
+            const browsersArray = options.target.split( ',' ).map( b => b.trim() );
+            const wdio = cfg[ 'helpers' ][ 'WebDriverIO' ];
+
+            if ( 1 === browsersArray.length ) {
+                wdio[ 'browser' ] = browsersArray[ 0 ];
+            } else {
+                const multiremoteCfg  = {};
+                for ( const browser of browsersArray ) {
+                    multiremoteCfg[ browser ] = {
+                        "desiredCapabilities": {
+                            "browserName": browser
+                        }
+                    };
+                }
+                wdio[ 'multiremote' ] = multiremoteCfg;
             }
         }
 
-        // Output file ---------------------------------------------------------
+        // WebDriverIO - Headless mode adjusts
 
-        const OUTPUT_FILE_NAME = 'output.json';
-        const outputFilePath = join( options.dirResult || '.', OUTPUT_FILE_NAME );
+        if ( options.headless && cfg[ 'helpers' ] && cfg[ 'helpers' ][ 'WebDriverIO' ] ) {
 
-        return outputFilePath;
+            const wdio = cfg[ 'helpers' ][ 'WebDriverIO' ];
+            wdio[ 'desiredCapabilities' ] = wdio[ 'desiredCapabilities' ] || {};
+            const dc = wdio[ 'desiredCapabilities' ];
+
+            if ( 'chrome' === wdio[ 'browser' ] ) {
+                dc[ 'browserName' ] = 'chrome';
+                dc[ 'chromeOptions' ] = {
+                    "args": [
+                        "--headless",
+                        "--disable-gpu",
+                        "--no-sandbox",
+                        "--proxy-server='direct://'",
+                        "--proxy-bypass-list=*"
+                    ]
+                };
+            } else if ( 'firefox' === wdio[ 'browser' ] ) {
+                dc[ 'browserName' ] = 'firefox';
+                dc[ 'moz:firefoxOptions' ] = {
+                    "args": [
+                        "-headless"
+                    ]
+                };
+            }
+        }
+
+
+
+        //
+        // Default CodeceptJS options
+        //
+
+        const defaultConfig = {
+            output: './_output',
+            helpers: {},
+            include: {},
+            mocha: {},
+            bootstrap: null,
+            teardown: null,
+            hooks: [],
+            gherkin: {}, // { features: string[] }
+            plugins: {
+                screenshotOnFail: {
+                    enabled: true, // will be disabled by default in 2.0
+                },
+            },
+
+            // OTHER OPTIONS:
+            require: undefined, // string[]
+            noGlobals: undefined, // boolean
+            tests: undefined, // string
+
+        };
+
+        const defaultCliOptions = {
+            profile: undefined,
+            features: undefined,
+            tests: undefined,
+
+            override: undefined,
+
+            // mocha opts
+            grep: undefined,
+            reporter: undefined,
+            reporterOptions: undefined,
+        };
+
+        if ( cfg[ 'mocha' ] && cfg[ 'mocha' ][ "reporterOptions" ] ) {
+            cfg[ 'mocha' ][ "reporterOptions" ][ "reportDir" ] = "./output";
+        }
+
+        const overrideCliOptions = {
+            grep: options.grep,
+            override: cfg
+        };
+
+        const finalCodeceptConfig = { ...defaultConfig, ...cfg };
+        const finalCliOptions = { ...defaultCliOptions, ...overrideCliOptions };
+
+        console.log( finalCodeceptConfig );
+        //
+        // Execution
+        //
+
+        const codecept = new Codecept( finalCodeceptConfig, finalCliOptions );
+        let error: boolean = false;
+        try {
+            codecept.init( executionPath );
+            await codecept.bootstrap();
+            codecept.loadTests();
+            await codecept.run();
+        } catch ( err ) {
+            error = true;
+            writeln( iconError, err.message ? err.message : err );
+        } finally {
+            await codecept.teardown();
+        }
+
+        //
+        // Output file
+        //
+
+        return error ? '' : join( options.dirResult || '.', 'output.json' );
     }
 
+
     protected createBasicConfiguration( options: TestScriptExecutionOptions ): any {
-        const scriptFileFilter = addJS( options.dirScript );
+        const scriptFileFilter = addJSWildcard( options.dirScript );
         const cfgMaker = new ConfigMaker();
         const config = cfgMaker.makeBasicConfig( scriptFileFilter, options.dirResult );
         return config;
     }
 
-    protected updateConfiguration( config: any, options: TestScriptExecutionOptions ): boolean {
 
-		// HELPERS
+    protected addHelpers( config: any, options: TestScriptExecutionOptions ): boolean {
 
         const helpers: Array< HelperConfiguration > = [
             new DbHelperConfiguration(),
@@ -186,164 +396,42 @@ export class TestScriptExecutor {
             }
 		}
 
-		// MULTIPLE BROWSER AND PARALLEL
-
-		// Add browsers for parallel execution whether needed
-		let browsersForParallel: string[] = [];
-
-		if ( options.target ) {
-			browsersForParallel = options.target.split( ',' ).map( b => b.trim() );
-		} else {
-			// Collect browser from helpers
-			if ( config[ 'helpers' ] ) {
-				for ( const [ , v ] of Object.entries( config[ 'helpers' ] ) ) {
-					const browser = v[ 'browser' ];
-					if ( browser && ! browsersForParallel.includes( browser ) ) {
-						browsersForParallel.push( browser );
-					}
-				}
-			}
-		}
-
-		// Include browsers for parallel IF NOT DEFINED.
-		// That's not depend on the parallel flag !
-		if ( browsersForParallel.length > 0 &&
-			config[ 'multiple' ] &&
-			config[ 'multiple' ][ 'parallel' ] &&
-			! config[ 'multiple' ][ 'parallel' ][ 'browsers' ] ||
-			(
-				Array.isArray( config[ 'multiple' ][ 'parallel' ][ 'browsers' ] ) &&
-				(
-					0 === config[ 'multiple' ][ 'parallel' ][ 'browsers' ].length ||
-					config[ 'multiple' ][ 'parallel' ][ 'browsers' ].join( ',' ) === browsersForParallel.join( ',' )
-				)
-			)
-		) {
-			changed = true;
-			config[ 'multiple' ][ 'parallel' ][ 'browsers' ] = browsersForParallel;
-		}
-
         return changed;
     }
 
-    protected async writeConfigurationFile(
-        codeceptJSConfigFile: string,
+
+    protected async writeJsonConfigurationFile(
+        jsonFileName: string,
         config: any,
         isUpdate: boolean
     ): Promise< boolean > {
 
+        const writeF = promisify( writeFile );
         try {
-            await this.writeObjectToFile( codeceptJSConfigFile, config );
+            const json = JSON.stringify( config, undefined, "\t" );
+            await writeF( jsonFileName, json );
+
         } catch ( e ) {
             if ( isUpdate ) {
                 writeln( iconError, textColor( 'Error updating configuration file' ),
-                    highlight( codeceptJSConfigFile ) +
-                    '. Please check if it has DbHelper and CmdHelper configured.' );
+                    highlight( jsonFileName ) +
+                    '. Please check if DbHelper and CmdHelper helpers are configured in CodeceptJS configuration file.' );
             } else {
-                writeln( iconError, textColor( 'Could not generate' ), highlight( codeceptJSConfigFile ) + '.', textColor( 'Please run the following command:' ) );
+                writeln( iconError, textColor( 'Could not generate' ), highlight( jsonFileName ) + '.', textColor( 'Please run the following command:' ) );
                 writeln( textColor( '  codeceptjs init' ) );
             }
             return false;
         }
 
         if ( isUpdate ) {
-            showInfo( 'Updated configuration file', codeceptJSConfigFile );
+            showInfo( 'Updated configuration file', jsonFileName );
         } else {
-            showInfo( 'Generated configuration file', codeceptJSConfigFile );
+            showInfo( 'Generated configuration file', jsonFileName );
             writeln( arrowRight, textColor( 'If this file does not work for you, delete it and then run:' ) );
             writeln( textColor( '  codeceptjs init' ) );
         }
 
         return true;
-    }
-
-
-    protected async readConfigurationFile(
-        codeceptJSConfigFile: string
-    ): Promise< any > {
-        let config = null;
-        try {
-            const readF = promisify( readFile );
-            const content = await readF( codeceptJSConfigFile );
-            config = JSON.parse( content.toString() );
-
-            showInfo( 'Configuration file', codeceptJSConfigFile );
-        } catch ( e ) {
-            writeln( iconError, textColor( 'Could not read' ), highlight( codeceptJSConfigFile ) );
-            return null;
-        }
-        return config;
-    }
-
-
-    protected async fileExists( path: string ): Promise< boolean > {
-        try {
-            const accessFile = promisify( access );
-            await accessFile( path, constants.F_OK );
-            return true;
-        } catch ( e ) {
-            return false;
-        }
-    }
-
-    protected async writeObjectToFile( path: string, obj: object ): Promise< void > {
-        const writeF = promisify( writeFile );
-        const json = JSON.stringify( obj, undefined, "\t" );
-        await writeF( path, json );
-    }
-
-    protected async copyFile( from: string, to: string ): Promise< void > {
-        const readF = promisify( readFile );
-        const writeF = promisify( writeFile );
-        const content = await readF( from, { encoding:'utf8' } );
-        await writeF( to, content, { encoding:'utf8', flag: 'w+' } );
-    }
-
-    protected async deleteFile( path: string ): Promise< void > {
-        const unlinkF = promisify( unlink );
-        await unlinkF( path );
-    }
-
-
-    // protected escapeJson( json: string ): string {
-    //     return JSON.stringify( { _: json} ).slice( 6, -2 );
-    // }
-
-    protected async runCommand(
-        command: string
-    ): Promise< number > {
-
-        let options = {
-            // stdio: 'inherit', // <<< not working on windows!
-            shell: true
-        };
-
-        // Splits the command into pieces to pass to the process;
-        //  mapping function simply removes quotes from each piece
-        let cmds = command.match( /[^"\s]+|"(?:\\\\"|[^"])+"/g )
-            .map( expr => {
-                return expr.charAt( 0 ) === '"' && expr.charAt( expr.length - 1 ) === '"' ? expr.slice( 1, -1 ) : expr;
-            } );
-        const runCMD = cmds[ 0 ];
-        cmds.shift();
-
-        return new Promise< number >( ( resolve, reject ) => {
-
-            const child = childProcess.spawn( runCMD, cmds, options );
-
-            child.stdout.on( 'data', ( chunk ) => {
-                console.log( chunk.toString() );
-            } );
-
-            child.stderr.on( 'data', ( chunk ) => {
-                console.warn( chunk.toString() );
-            } );
-
-            child.on( 'exit', ( code ) => {
-                resolve( code );
-            } );
-
-        } );
     }
 
 }

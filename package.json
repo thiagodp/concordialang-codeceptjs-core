@@ -38,7 +38,7 @@
         "switch:web": "npm run switch:un && npm i concordialang-types concordialang-plugin",
         "clear": "rimraf dist",
         "prebuild": "npm run clear",
-        "build": "tsc",
+        "build": "tsc && cpy src/cjs.js dist/",
         "test": "jest",
         "cov": "jest --coverage",
         "all": "npm run build && npm run test",
@@ -62,6 +62,7 @@
     },
     "dependencies": {
         "chalk": "^3.0.0",
+        "codeceptjs": "^3.0.6",
         "codeceptjs-cmdhelper": "^2.2.3",
         "codeceptjs-dbhelper": "^1.0.1",
         "concordialang-plugin": "^1.1.0",
@@ -75,6 +76,7 @@
     "devDependencies": {
         "@types/jest": "^25.2.3",
         "@types/node": "^8.10.66",
+        "cpy-cli": "^3.1.1",
         "jest": "^25.5.4",
         "jest-extended": "^0.11.5",
         "memfs": "^2.17.1",

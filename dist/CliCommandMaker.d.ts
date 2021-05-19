@@ -1,10 +1,4 @@
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
-/**
- * Add wildcard to JS files to the given path.
- *
- * @param path Path
- */
-export declare function addJS(path: string): string;
 export declare class CliCommandMaker {
     private readonly _defaultFrameworkConfig;
     constructor(_defaultFrameworkConfig: any);

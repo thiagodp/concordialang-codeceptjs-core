@@ -1,35 +1,6 @@
 import { TestScriptExecutionOptions } from 'concordialang-plugin';
 import { isAbsolute, join } from 'path';
-
-/**
- * Add wildcard to JS files to the given path.
- *
- * @param path Path
- */
-export function addJS( path: string ): string {
-
-	if ( ! path || /(\.js|\)|\})$/i.test( path ) ) {
-		return path;
-	}
-
-	const isUnix = path.includes( '/' );
-	if ( isUnix ) {
-		if ( path.endsWith( '/' ) ) {
-			return path + '**/*.js';
-		}
-		return path + '/**/*.js';
-	}
-
-	const isWin = path.includes( '\\' );
-	if ( isWin ) {
-		if ( path.endsWith( '\\' ) ) {
-			return path + '**\\*.js';
-		}
-		return path + '\\**\\*.js';
-	}
-
-	return path + '/**/*.js';
-}
+import { addJSWildcard } from './wildcard';
 
 export class CliCommandMaker {
 
@@ -144,7 +115,7 @@ export class CliCommandMaker {
 			 // ! options.grep &&
 			overrideObj[ 'tests' ]
 		) {
-			overrideObj[ 'tests' ] = addJS( options.dirScript );
+			overrideObj[ 'tests' ] = addJSWildcard( options.dirScript );
 		}
 
 
@@ -171,7 +142,7 @@ export class CliCommandMaker {
                 } else if ( ! options.grep ) {
 
 					if ( ! options.file || '' === options.file.toString().trim() ) {
-						overrideObj[ 'tests' ] = addJS( options.dirScript );
+						overrideObj[ 'tests' ] = addJSWildcard( options.dirScript );
 					} else {
 
 						const toUnixPath = path => path.replace( /\\\\?/g, '/' );
@@ -195,7 +166,7 @@ export class CliCommandMaker {
 					}
                 }
             } else {
-				overrideObj[ 'tests' ] = addJS( options.dirScript );
+				overrideObj[ 'tests' ] = addJSWildcard( options.dirScript );
 			}
 
             if ( !! options.dirResult ) {

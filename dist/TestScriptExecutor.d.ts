@@ -13,12 +13,6 @@ export declare class TestScriptExecutor {
      */
     execute(options: TestScriptExecutionOptions): Promise<string>;
     protected createBasicConfiguration(options: TestScriptExecutionOptions): any;
-    protected updateConfiguration(config: any, options: TestScriptExecutionOptions): boolean;
-    protected writeConfigurationFile(codeceptJSConfigFile: string, config: any, isUpdate: boolean): Promise<boolean>;
-    protected readConfigurationFile(codeceptJSConfigFile: string): Promise<any>;
-    protected fileExists(path: string): Promise<boolean>;
-    protected writeObjectToFile(path: string, obj: object): Promise<void>;
-    protected copyFile(from: string, to: string): Promise<void>;
-    protected deleteFile(path: string): Promise<void>;
-    protected runCommand(command: string): Promise<number>;
+    protected addHelpers(config: any, options: TestScriptExecutionOptions): boolean;
+    protected writeJsonConfigurationFile(jsonFileName: string, config: any, isUpdate: boolean): Promise<boolean>;
 }

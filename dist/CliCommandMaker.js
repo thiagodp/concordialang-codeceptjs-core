@@ -1,33 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CliCommandMaker = exports.addJS = void 0;
+exports.CliCommandMaker = void 0;
 const path_1 = require("path");
-/**
- * Add wildcard to JS files to the given path.
- *
- * @param path Path
- */
-function addJS(path) {
-    if (!path || /(\.js|\)|\})$/i.test(path)) {
-        return path;
-    }
-    const isUnix = path.includes('/');
-    if (isUnix) {
-        if (path.endsWith('/')) {
-            return path + '**/*.js';
-        }
-        return path + '/**/*.js';
-    }
-    const isWin = path.includes('\\');
-    if (isWin) {
-        if (path.endsWith('\\')) {
-            return path + '**\\*.js';
-        }
-        return path + '\\**\\*.js';
-    }
-    return path + '/**/*.js';
-}
-exports.addJS = addJS;
+const wildcard_1 = require("./wildcard");
 class CliCommandMaker {
     constructor(_defaultFrameworkConfig) {
         this._defaultFrameworkConfig = _defaultFrameworkConfig;
@@ -119,7 +94,7 @@ class CliCommandMaker {
             !options.file &&
             // ! options.grep &&
             overrideObj['tests']) {
-            overrideObj['tests'] = addJS(options.dirScript);
+            overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
         }
         if (options.file ||
             options.dirResult ||
@@ -138,7 +113,7 @@ class CliCommandMaker {
                 }
                 else if (!options.grep) {
                     if (!options.file || '' === options.file.toString().trim()) {
-                        overrideObj['tests'] = addJS(options.dirScript);
+                        overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
                     }
                     else {
                         const toUnixPath = path => path.replace(/\\\\?/g, '/');
@@ -158,7 +133,7 @@ class CliCommandMaker {
                 }
             }
             else {
-                overrideObj['tests'] = addJS(options.dirScript);
+                overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
             }
             if (!!options.dirResult) {
                 // overridePieces.push( `\\\\"output\\\\":\\\\"${options.dirResults}\\\\"` );

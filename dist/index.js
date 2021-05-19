@@ -21,3 +21,4 @@ __exportStar(require("./HelperConfiguration"), exports);
 __exportStar(require("./ReportConverter"), exports);
 __exportStar(require("./TestScriptExecutor"), exports);
 __exportStar(require("./TestScriptGenerator"), exports);
+__exportStar(require("./cjs"), exports);
