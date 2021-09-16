@@ -261,7 +261,7 @@ export class TestScriptExecutor {
             }
         }
 
-        // WebDriverIO - Headless mode adjusts
+        // WebDriverIO - Headless mode changes
 
         if ( options.headless && cfg[ 'helpers' ] && cfg[ 'helpers' ][ 'WebDriverIO' ] ) {
 

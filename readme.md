@@ -4,7 +4,7 @@
 
 # concordialang-codeceptjs-core
 
-> Concordia compiler plug-in core modules for CodeceptJS
+> Core modules of a Concordia Compiler plug-in for CodeceptJS
 
 ## [What's New](https://github.com/thiagodp/concordialang-codeceptjs-core/releases)
 
@@ -13,48 +13,19 @@
 ```bash
 npm i concordialang-codeceptjs-core
 ```
-
-### Compatibility
-
-- Version `1.x` is compatible with **[Concordia](https://concordialang.org) `2.x`**
-- Version `0.x` is compatible with **[Concordia](https://concordialang.org) `1.x`**
-
 ## Related
 
 - [concordialang-codeceptjs-playwright](https://github.com/thiagodp/concordialang-codeceptjs-playwright)
+- [concordialang-codeceptjs-testcafe](https://github.com/thiagodp/concordialang-codeceptjs-testcafe)
 - [concordialang-codeceptjs-webdriverio](https://github.com/thiagodp/concordialang-codeceptjs-webdriverio)
 - [concordialang-codeceptjs-appium](https://github.com/thiagodp/concordialang-codeceptjs-appium)
 
-## Documentation
+## Compatibility with Concordia Compiler
 
-#### Shared from version `1.1` on
+- Version `1.x` is compatible with **[Concordia Compiler](https://concordialang.org) `2.x`**
+- Version `0.x` is compatible with **[Concordia Compiler](https://concordialang.org) `1.x`**
 
-| Name                   | Version | Used directly |
-| ---------------------- | ------- | ------------- |
-| `concordialang-plugin` | latest  | yes           |
-| `codeceptjs-cmdhelper` | latest  | _no_          |
-| `codeceptjs-dbhelper`  | latest  | _no_          |
-
-Notes:
-- Other packages must be shared by the plug-ins.
-- `codeceptjs-dbhelper` installs `database-js`.
-
-#### Shared by version `1.0`
-
-| Name                   | Version | Used directly |
-| ---------------------- | ------- | ------------- |
-| `concordialang-plugin` | 1.x     | yes           |
-| `codeceptjs`           | 1.x     | _no_          |
-| `codeceptjs-cmdhelper` | latest  | _no_          |
-| `codeceptjs-dbhelper`  | latest  | _no_          |
-| `database-js`          | latest  | _no_          |
-| `database-js-json`     | latest  | _no_          |
-| `mocha`                | 5.x     | _no_          |
-| `mocha-multi`          | 1.x     | _no_          |
-| `mochawesome`          | 3.x     | _no_          |
-
-
-### Integration with CodeceptJS
+## Integration with CodeceptJS
 
 #### Test Events
 

@@ -8,7 +8,6 @@ describe( 'ReportConverter', () => {
 
     // helper variables
 
-    // const dir = resolve( __dirname );
     const dir = normalize( process.cwd() );
     const reportFilePath = join( dir, 'report.json' );
     const pluginConfigPath = join( dir, 'codeceptJS.json' );
