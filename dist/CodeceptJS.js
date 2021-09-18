@@ -32,7 +32,7 @@ class CodeceptJS {
      */
     constructor(descriptorPath, fsToUse, _encoding = 'utf8') {
         this._encoding = _encoding;
-        this._descriptorPath = descriptorPath || path_1.join(process.cwd(), 'codecept.json');
+        this._descriptorPath = descriptorPath || (0, path_1.join)(process.cwd(), 'codecept.json');
         this._fs = !fsToUse ? fs : fsToUse;
     }
     /** @inheritDoc */
@@ -44,7 +44,7 @@ class CodeceptJS {
             for (let ats of abstractTestScripts || []) {
                 const outputFilePath = this.createFilePath(options.sourceCodeDir, ats.sourceFile, options.specificationDir);
                 try {
-                    const dir = path_1.dirname(outputFilePath);
+                    const dir = (0, path_1.dirname)(outputFilePath);
                     yield this.ensureDir(dir);
                     // console.log( '> Ensuring dir', dir );
                     // console.log( '> File is', outputFilePath );
@@ -90,13 +90,13 @@ class CodeceptJS {
      */
     createFilePath(targetDir, specFilePath, specDir) {
         const relSpecFilePath = specDir
-            ? path_1.relative(specDir, specFilePath)
+            ? (0, path_1.relative)(specDir, specFilePath)
             : specFilePath;
         const outputDir = specDir
-            ? path_1.resolve(targetDir, path_1.dirname(relSpecFilePath))
+            ? (0, path_1.resolve)(targetDir, (0, path_1.dirname)(relSpecFilePath))
             : targetDir;
-        const fileName = path_1.basename(relSpecFilePath, '.testcase') + '.js';
-        return path_1.join(outputDir, fileName);
+        const fileName = (0, path_1.basename)(relSpecFilePath, '.testcase') + '.js';
+        return (0, path_1.join)(outputDir, fileName);
     }
     ensureDir(dir) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -109,7 +109,7 @@ class CodeceptJS {
     }
     writeFile(path, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const write = util_1.promisify(this._fs.writeFile || fs.writeFile);
+            const write = (0, util_1.promisify)(this._fs.writeFile || fs.writeFile);
             yield write(path, content, { encoding: this._encoding, flag: 'w+' });
         });
     }

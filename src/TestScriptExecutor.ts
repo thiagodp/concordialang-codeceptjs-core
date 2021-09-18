@@ -290,8 +290,6 @@ export class TestScriptExecutor {
             }
         }
 
-
-
         //
         // Default CodeceptJS options
         //
@@ -327,23 +325,44 @@ export class TestScriptExecutor {
 
             // mocha opts
             grep: undefined,
-            reporter: undefined,
-            reporterOptions: undefined,
+            reporter: undefined, // string
+            reporterOptions: undefined, // string
         };
 
-        if ( cfg[ 'mocha' ] && cfg[ 'mocha' ][ "reporterOptions" ] ) {
-            cfg[ 'mocha' ][ "reporterOptions" ][ "reportDir" ] = "./output";
-        }
+
+		// Mocha Awesome reports
+		// https://codecept.io/reports/#html
+
+		let mocha = cfg[ 'mocha' ];
+		if ( ! mocha ) {
+			mocha = cfg[ 'mocha' ] = {};
+		}
+
+		let reporterOptions = mocha[ 'reporterOptions' ];
+		if ( ! reporterOptions ) {
+			reporterOptions = mocha[ 'reporterOptions' ] = {};
+		}
+
+		if ( ! reporterOptions[ 'reportDir' ] ) {
+			reporterOptions[ 'reportDir' ] = options.dirResult;
+		}
+
+		// OVERRIDES
 
         const overrideCliOptions = {
             grep: options.grep,
-            override: cfg
+            override: cfg,
+			// reporter: 'json',
+			// reporterOptions: `stdout=${options.dirResult}/output.json`
+			reporter: 'mochawesome',
+			reporterOptions: `json=true,reportDir=${options.dirResult},reportFilename=output`
         };
 
         const finalCodeceptConfig = { ...defaultConfig, ...cfg };
         const finalCliOptions = { ...defaultCliOptions, ...overrideCliOptions };
 
-        console.log( finalCodeceptConfig );
+        // console.log( finalCodeceptConfig );
+
         //
         // Execution
         //

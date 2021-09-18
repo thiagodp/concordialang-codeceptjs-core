@@ -39,6 +39,7 @@
         "clear": "rimraf dist",
         "prebuild": "npm run clear",
         "build": "tsc && cpy src/cjs.js dist/",
+        "watch": "tsc --watch",
         "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
         "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
         "all": "npm run build && npm run test",

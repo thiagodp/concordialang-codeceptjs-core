@@ -89,12 +89,12 @@ class TestScriptGenerator {
                 event.convertedCommands.push.apply(event.convertedCommands, converted);
             }
         }
-        return mustache_1.render(this.template, obj); // mustache's renderer
+        return (0, mustache_1.render)(this.template, obj); // mustache's renderer
     }
     analyzeConverted(converted, cmd, ats) {
         if (converted && 0 === converted.length && ats && cmd) {
             const filePath = this._specificationDir
-                ? path_1.relative(this._specificationDir, ats.sourceFile)
+                ? (0, path_1.relative)(this._specificationDir, ats.sourceFile)
                 : ats.sourceFile;
             console.log(logSymbols.warning, 'Plug-in could not convert command from', chalk.yellowBright(filePath), cmd.location ? '(' + cmd.location.line + ',' + cmd.location.column + ')' : '');
             return [this._mapper.makeCommentWithCommand(cmd)];

@@ -227,7 +227,7 @@ class ReportConverter {
             if (!fileExists) {
                 throw new Error('File not found: ' + path);
             }
-            const readFileAsync = util_1.promisify(this._fs.readFile);
+            const readFileAsync = (0, util_1.promisify)(this._fs.readFile);
             const content = yield readFileAsync(path, this._encoding);
             if (!content || content.length < 1) {
                 throw new Error('Empty JSON file: ' + path);

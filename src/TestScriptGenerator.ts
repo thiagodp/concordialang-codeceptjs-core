@@ -117,6 +117,7 @@ export class TestScriptGenerator {
 				chalk.yellowBright( filePath ),
 				cmd.location ? '(' + cmd.location.line + ',' + cmd.location.column + ')' : ''
             );
+
             return [ this._mapper.makeCommentWithCommand( cmd ) ];
         }
         return converted || [];

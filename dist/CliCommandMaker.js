@@ -94,7 +94,7 @@ class CliCommandMaker {
             !options.file &&
             // ! options.grep &&
             overrideObj['tests']) {
-            overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
+            overrideObj['tests'] = (0, wildcard_1.addJSWildcard)(options.dirScript);
         }
         if (options.file ||
             options.dirResult ||
@@ -113,7 +113,7 @@ class CliCommandMaker {
                 }
                 else if (!options.grep) {
                     if (!options.file || '' === options.file.toString().trim()) {
-                        overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
+                        overrideObj['tests'] = (0, wildcard_1.addJSWildcard)(options.dirScript);
                     }
                     else {
                         const toUnixPath = path => path.replace(/\\\\?/g, '/');
@@ -121,7 +121,7 @@ class CliCommandMaker {
                             .split(',')
                             // Make paths using the source code dir
                             // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
-                            .map(f => path_1.isAbsolute(f) ? f : toUnixPath(path_1.join(options.dirScript, f)));
+                            .map(f => (0, path_1.isAbsolute)(f) ? f : toUnixPath((0, path_1.join)(options.dirScript, f)));
                         const fileNamesSeparatedByComma = files.length > 1 ? files.join(',') : files[0];
                         // const globPattern = `${options.dirScripts}/**/*/{${fileNamesSeparatedByComma}}.js`;
                         const globPattern = files.length > 1
@@ -133,7 +133,7 @@ class CliCommandMaker {
                 }
             }
             else {
-                overrideObj['tests'] = wildcard_1.addJSWildcard(options.dirScript);
+                overrideObj['tests'] = (0, wildcard_1.addJSWildcard)(options.dirScript);
             }
             if (!!options.dirResult) {
                 // overridePieces.push( `\\\\"output\\\\":\\\\"${options.dirResults}\\\\"` );

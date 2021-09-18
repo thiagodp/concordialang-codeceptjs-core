@@ -143,7 +143,7 @@ class CommandMapper {
                 comment: cmd.comment,
             };
             const template = cfg.template + COMMENT_TEMPLATE;
-            return [mustache_1.render(template, values)];
+            return [(0, mustache_1.render)(template, values)];
         }
         let result = [];
         if ('switch' === cmd.action && this.withinCount() > 0) {
@@ -186,7 +186,7 @@ class CommandMapper {
         };
         const tabs = TABULATION.repeat(this.withinCount());
         const template = tabs + cfg.template + COMMENT_TEMPLATE;
-        const rendered = mustache_1.render(template, values);
+        const rendered = (0, mustache_1.render)(template, values);
         result.push(rendered);
         // Switch with multiple frames
         if ('switch' === cmd.action

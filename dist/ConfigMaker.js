@@ -17,8 +17,8 @@ class ConfigMaker {
      * @param outputFile Output report file. Default is 'output.json'.
      */
     makeBasicConfig(filter = 'test/**/*.js', output = './output', outputFile = 'output.json') {
-        const testsFilter = toUnixPath(path_1.relative(process.cwd(), filter));
-        const outputDir = toUnixPath(path_1.relative(process.cwd(), output));
+        const testsFilter = toUnixPath((0, path_1.relative)(process.cwd(), filter));
+        const outputDir = toUnixPath((0, path_1.relative)(process.cwd(), output));
         return {
             "tests": testsFilter,
             "output": outputDir,
@@ -33,7 +33,7 @@ class ConfigMaker {
                         }
                     },
                     "json": {
-                        "stdout": path_1.join(outputDir, outputFile)
+                        "stdout": (0, path_1.join)(outputDir, outputFile)
                     },
                     "mochawesome": {
                         "stdout": "-",

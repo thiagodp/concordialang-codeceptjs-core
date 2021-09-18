@@ -69,9 +69,9 @@ class TestScriptExecutor {
             // Load configuration file
             //
             let configFile;
-            const jsonConfigFile = path_1.join(executionPath, 'codecept.json');
+            const jsonConfigFile = (0, path_1.join)(executionPath, 'codecept.json');
             const jsConfigFile = './codecept.conf.js';
-            const readF = util_1.promisify(fs_1.readFile);
+            const readF = (0, util_1.promisify)(fs_1.readFile);
             let cfgFileType = 'none';
             let cfg;
             // Read JSON config file
@@ -166,7 +166,7 @@ class TestScriptExecutor {
             }
             // Define wildcard to JS files if not file is detected
             if (!options.file || '' === options.file.toString().trim()) {
-                cfg['tests'] = wildcard_1.addJSWildcard(options.dirScript);
+                cfg['tests'] = (0, wildcard_1.addJSWildcard)(options.dirScript);
                 // Create glob for file name
             }
             else {
@@ -181,7 +181,7 @@ class TestScriptExecutor {
                         .split(',')
                         // Make paths using the source code dir
                         // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
-                        .map(f => path_1.isAbsolute(f) ? f : toUnixPath(path_1.join(options.dirScript, f)));
+                        .map(f => (0, path_1.isAbsolute)(f) ? f : toUnixPath((0, path_1.join)(options.dirScript, f)));
                     const fileNamesSeparatedByComma = files.length > 1 ? files.join(',') : files[0];
                     const globPattern = files.length > 1
                         ? `{${fileNamesSeparatedByComma}}`
@@ -215,7 +215,7 @@ class TestScriptExecutor {
                     wdio['multiremote'] = multiremoteCfg;
                 }
             }
-            // WebDriverIO - Headless mode adjusts
+            // WebDriverIO - Headless mode changes
             if (options.headless && cfg['helpers'] && cfg['helpers']['WebDriverIO']) {
                 const wdio = cfg['helpers']['WebDriverIO'];
                 wdio['desiredCapabilities'] = wdio['desiredCapabilities'] || {};
@@ -255,13 +255,13 @@ class TestScriptExecutor {
                 gherkin: {},
                 plugins: {
                     screenshotOnFail: {
-                        enabled: true,
+                        enabled: true, // will be disabled by default in 2.0
                     },
                 },
                 // OTHER OPTIONS:
                 require: undefined,
                 noGlobals: undefined,
-                tests: undefined,
+                tests: undefined, // string
             };
             const defaultCliOptions = {
                 profile: undefined,
@@ -271,18 +271,33 @@ class TestScriptExecutor {
                 // mocha opts
                 grep: undefined,
                 reporter: undefined,
-                reporterOptions: undefined,
+                reporterOptions: undefined, // string
             };
-            if (cfg['mocha'] && cfg['mocha']["reporterOptions"]) {
-                cfg['mocha']["reporterOptions"]["reportDir"] = "./output";
+            // Mocha Awesome reports
+            // https://codecept.io/reports/#html
+            let mocha = cfg['mocha'];
+            if (!mocha) {
+                mocha = cfg['mocha'] = {};
             }
+            let reporterOptions = mocha['reporterOptions'];
+            if (!reporterOptions) {
+                reporterOptions = mocha['reporterOptions'] = {};
+            }
+            if (!reporterOptions['reportDir']) {
+                reporterOptions['reportDir'] = options.dirResult;
+            }
+            // OVERRIDES
             const overrideCliOptions = {
                 grep: options.grep,
-                override: cfg
+                override: cfg,
+                // reporter: 'json',
+                // reporterOptions: `stdout=${options.dirResult}/output.json`
+                reporter: 'mochawesome',
+                reporterOptions: `json=true,reportDir=${options.dirResult},reportFilename=output`
             };
             const finalCodeceptConfig = Object.assign(Object.assign({}, defaultConfig), cfg);
             const finalCliOptions = Object.assign(Object.assign({}, defaultCliOptions), overrideCliOptions);
-            console.log(finalCodeceptConfig);
+            // console.log( finalCodeceptConfig );
             //
             // Execution
             //
@@ -304,11 +319,11 @@ class TestScriptExecutor {
             //
             // Output file
             //
-            return error ? '' : path_1.join(options.dirResult || '.', 'output.json');
+            return error ? '' : (0, path_1.join)(options.dirResult || '.', 'output.json');
         });
     }
     createBasicConfiguration(options) {
-        const scriptFileFilter = wildcard_1.addJSWildcard(options.dirScript);
+        const scriptFileFilter = (0, wildcard_1.addJSWildcard)(options.dirScript);
         const cfgMaker = new ConfigMaker_1.ConfigMaker();
         const config = cfgMaker.makeBasicConfig(scriptFileFilter, options.dirResult);
         return config;
@@ -331,7 +346,7 @@ class TestScriptExecutor {
     }
     writeJsonConfigurationFile(jsonFileName, config, isUpdate) {
         return __awaiter(this, void 0, void 0, function* () {
-            const writeF = util_1.promisify(fs_1.writeFile);
+            const writeF = (0, util_1.promisify)(fs_1.writeFile);
             try {
                 const json = JSON.stringify(config, undefined, "\t");
                 yield writeF(jsonFileName, json);
