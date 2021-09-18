@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/thiagodp/concordialang-codeceptjs-core.svg?branch=master)](https://travis-ci.org/thiagodp/concordialang-codeceptjs-core)
-[![npm version](https://badge.fury.io/js/concordialang-codeceptjs-core.svg)](https://badge.fury.io/js/concordialang-codeceptjs-core)
-[![GitHub last commit](https://img.shields.io/github/last-commit/thiagodp/concordialang-codeceptjs-core.svg)](https://github.com/thiagodp/concordialang-codeceptjs-core/releases)
+[![Build Status](https://img.shields.io/github/workflow/status/thiagodp/concordialang-codeceptjs-core/test?style=for-the-badge)](https://github.com/thiagodp/concordialang-codeceptjs-core/actions)
+[![npm version](https://img.shields.io/npm/v/concordialang-codeceptjs-core.svg?style=for-the-badge&color=green&label=NPM)](https://badge.fury.io/js/concordialang-codeceptjs-core)
+[![GitHub last commit](https://img.shields.io/github/last-commit/thiagodp/concordialang-codeceptjs-core.svg?style=for-the-badge)](https://github.com/thiagodp/concordialang-codeceptjs-core/releases)
 
 # concordialang-codeceptjs-core
 
