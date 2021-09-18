@@ -44,7 +44,7 @@
         "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
         "all": "npm run build && npm run test",
         "preversion": "npm run all",
-        "postversion": "git push && git push --tags"
+        "postversion": "echo \"Rebase is recommended. Don't forget to push the tags.\""
     },
     "dependencies": {
         "chalk": "^3.0.0",
@@ -56,6 +56,8 @@
         "dedent-js": "^1.0.1",
         "figures": "^3.2.0",
         "log-symbols": "^3.0.0",
+        "mocha": "^9.1.1",
+        "mochawesome": "^6.2.2",
         "mustache": "^2.3.0",
         "node-fs-extra": "^0.8.2"
     },
