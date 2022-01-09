@@ -74,7 +74,7 @@ export class TestScriptExecutor {
         // Load configuration file
         //
 
-        let configFile: string;
+        let configFile: string | undefined;
         const jsonConfigFile = join( executionPath, 'codecept.json' );
         const jsConfigFile = './codecept.conf.js';
         const readF = promisify( readFile );
@@ -118,7 +118,7 @@ export class TestScriptExecutor {
         // Add helpers
         } else {
 
-            showInfo( 'Configuration file', configFile );
+            showInfo( 'Configuration file', configFile || 'not found' );
             const changed: boolean = this.addHelpers( cfg, options ); // Add Helpers
 
             // Rewrite the JSON configuration file if needed
@@ -142,7 +142,8 @@ export class TestScriptExecutor {
 			// Collect browser from helpers
 			if ( cfg[ 'helpers' ] ) {
 				for ( const [ , v ] of Object.entries( cfg[ 'helpers' ] ) ) {
-					const browser = v[ 'browser' ];
+                    const o = v as any;
+					const browser = o[ 'browser' ];
 					if ( browser && ! configuredBrowsers.includes( browser ) ) {
 						configuredBrowsers.push( browser );
 					}
@@ -174,12 +175,14 @@ export class TestScriptExecutor {
 
                 for ( const [ , v ] of Object.entries( cfg[ 'helpers' ] ) ) {
 
-                    if ( options.target && v[ 'browser' ] ) {
-                        v[ 'browser' ] = firstTargetBrowser;
+                    const o = v as any;
+
+                    if ( options.target && o[ 'browser' ] ) {
+                        o[ 'browser' ] = firstTargetBrowser;
                     }
 
-                    if ( true === options.headless && v[ 'show' ] ) {
-                        v[ 'show' ] = false;
+                    if ( true === options.headless && o[ 'show' ] ) {
+                        o[ 'show' ] = false;
                     }
 
                 }
@@ -195,7 +198,7 @@ export class TestScriptExecutor {
 
         // Define wildcard to JS files if not file is detected
         if ( ! options.file || '' === options.file.toString().trim() ) {
-            cfg[ 'tests' ] = addJSWildcard( options.dirScript );
+            cfg[ 'tests' ] = addJSWildcard( options.dirScript! );
 
         // Create glob for file name
         } else {
@@ -214,7 +217,7 @@ export class TestScriptExecutor {
                     .split( ',' )
                     // Make paths using the source code dir
                     // .map( f => toUnixPath( resolve( options.dirScripts, f ) ) );
-                    .map( f => isAbsolute( f ) ? f : toUnixPath( join( options.dirScript, f ) ) )
+                    .map( f => isAbsolute( f ) ? f : toUnixPath( join( options.dirScript!, f ) ) )
                     ;
 
                 const fileNamesSeparatedByComma = files.length > 1 ? files.join( ',' ) : files[ 0 ];
@@ -376,7 +379,8 @@ export class TestScriptExecutor {
             await codecept.run();
         } catch ( err ) {
             error = true;
-            writeln( iconError, err.message ? err.message : err );
+            const e = err as Error;
+            writeln( iconError, e.message ? e.message : err );
         } finally {
             await codecept.teardown();
         }
@@ -390,7 +394,7 @@ export class TestScriptExecutor {
 
 
     protected createBasicConfiguration( options: TestScriptExecutionOptions ): any {
-        const scriptFileFilter = addJSWildcard( options.dirScript );
+        const scriptFileFilter = addJSWildcard( options.dirScript! );
         const cfgMaker = new ConfigMaker();
         const config = cfgMaker.makeBasicConfig( scriptFileFilter, options.dirResult );
         return config;

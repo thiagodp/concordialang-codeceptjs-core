@@ -107,7 +107,7 @@ class TestScriptExecutor {
                 // Add helpers
             }
             else {
-                showInfo('Configuration file', configFile);
+                showInfo('Configuration file', configFile || 'not found');
                 const changed = this.addHelpers(cfg, options); // Add Helpers
                 // Rewrite the JSON configuration file if needed
                 // TO-DO: Allow to update a JS config file
@@ -127,7 +127,8 @@ class TestScriptExecutor {
                 // Collect browser from helpers
                 if (cfg['helpers']) {
                     for (const [, v] of Object.entries(cfg['helpers'])) {
-                        const browser = v['browser'];
+                        const o = v;
+                        const browser = o['browser'];
                         if (browser && !configuredBrowsers.includes(browser)) {
                             configuredBrowsers.push(browser);
                         }
@@ -151,11 +152,12 @@ class TestScriptExecutor {
                 if (cfg['helpers'] && (options.target || true === options.headless)) {
                     const [firstTargetBrowser] = configuredBrowsers;
                     for (const [, v] of Object.entries(cfg['helpers'])) {
-                        if (options.target && v['browser']) {
-                            v['browser'] = firstTargetBrowser;
+                        const o = v;
+                        if (options.target && o['browser']) {
+                            o['browser'] = firstTargetBrowser;
                         }
-                        if (true === options.headless && v['show']) {
-                            v['show'] = false;
+                        if (true === options.headless && o['show']) {
+                            o['show'] = false;
                         }
                     }
                 }
@@ -311,7 +313,8 @@ class TestScriptExecutor {
             }
             catch (err) {
                 error = true;
-                writeln(iconError, err.message ? err.message : err);
+                const e = err;
+                writeln(iconError, e.message ? e.message : err);
             }
             finally {
                 yield codecept.teardown();

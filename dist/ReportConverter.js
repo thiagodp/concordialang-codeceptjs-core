@@ -153,7 +153,7 @@ class ReportConverter {
                         type: !method.err.params ? undefined : method.err.params.type,
                         message: method.err.message,
                         stackTrace: method.err.stack,
-                        scriptLocation: scriptLocation,
+                        scriptLocation: scriptLocation || { column: 0, line: 0, filePath: 'unknown' },
                         specLocation: specLocation
                     };
                 }

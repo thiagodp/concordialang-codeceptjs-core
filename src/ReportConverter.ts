@@ -38,7 +38,7 @@ export class ReportConverter {
         try {
             source = await this.readJsonFile( resultFilePath );
         } catch ( e ) {
-            throw new Error( 'Cannot read the test report file. ' + e.message );
+            throw new Error( 'Cannot read the test report file. ' + ( e as Error ).message );
         }
 
         let pluginConfig = {};
@@ -163,9 +163,9 @@ export class ReportConverter {
 
             if ( 'failed' === testMethodResult.status ) {
 
-                const scriptLocation: Location = this.extractScriptLocationFromStackTrace( method.err.stack );
+                const scriptLocation: Location | null = this.extractScriptLocationFromStackTrace( method.err.stack );
 
-                let specLocation: Location;
+                let specLocation: Location | undefined;
                 if ( !! scriptLocation ) {
                     specLocation = await this.extractSpecLocationFromScriptLocation( scriptLocation );
                 }
@@ -174,8 +174,7 @@ export class ReportConverter {
                     type: ! method.err.params ? undefined : method.err.params.type,
                     message: method.err.message,
                     stackTrace: method.err.stack,
-
-                    scriptLocation: scriptLocation,
+                    scriptLocation: scriptLocation || { column: 0, line: 0, filePath: 'unknown' } as Location,
                     specLocation: specLocation
                 };
             }
@@ -203,7 +202,7 @@ export class ReportConverter {
     ): void {
 
         // Finds the correspondent test suite.
-        let testSuiteResult: TestSuiteResult =
+        let testSuiteResult: TestSuiteResult | undefined =
             result.results.find( ( suite: TestSuiteResult ) => suite.suite === suiteName );
 
         // If the test suite doesn't exists, creates a new one.
