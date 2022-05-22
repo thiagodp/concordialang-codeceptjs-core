@@ -47,7 +47,7 @@
         "postversion": "echo \"Rebase is recommended. Don't forget to push the tags.\" && git log --oneline"
     },
     "dependencies": {
-        "chalk": "^3.0.0",
+        "chalk": "^4.0.0",
         "codeceptjs": "^3.2.3",
         "codeceptjs-cmdhelper": "^2.4.0",
         "codeceptjs-dbhelper": "^1.2.2",
